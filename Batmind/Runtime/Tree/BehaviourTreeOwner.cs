@@ -44,7 +44,10 @@ namespace Batmind.Tree
 #if UNITY_EDITOR
         private void OnValidate()
         {
-            _Tree.OnValidate();
+            if (_Tree != null)
+            {
+                _Tree.OnValidate();
+            }
         }
 #endif
     }
