@@ -1,0 +1,137 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8f04fd7396940b6878d272a3ec0b7e5, type: 3}
+  m_Name: BTOwnerExampleData
+  m_EditorClassIdentifier: 
+  _Tree:
+    _id: 672606496
+    Priority: 0
+    GraphPosition: {x: 0, y: 0}
+    Children:
+    - rid: 9112183468892618975
+    Blackboard:
+      _entries:
+      - Key:
+          name: fdfd
+          hashedKey: 930406837
+        ValueType: 0
+        Value:
+          type: 0
+          IntValue: 2323
+          FloatValue: 0
+          BoolValue: 0
+          StringValue: fds232
+          Vector3Value: {x: 0, y: 0, z: 0}
+      - Key:
+          name: ddsdx
+          hashedKey: -1873888274
+        ValueType: 1
+        Value:
+          type: 0
+          IntValue: 0
+          FloatValue: 2
+          BoolValue: 0
+          StringValue: 
+          Vector3Value: {x: 0, y: 0, z: 0}
+      - Key:
+          name: Nwew6ey00
+          hashedKey: -464202606
+        ValueType: 1
+        Value:
+          type: 0
+          IntValue: 0
+          FloatValue: 12
+          BoolValue: 0
+          StringValue: 
+          Vector3Value: {x: 0, y: 0, z: 0}
+      - Key:
+          name: NewKey
+          hashedKey: 1346443544
+        ValueType: 0
+        Value:
+          type: 0
+          IntValue: 0
+          FloatValue: 0
+          BoolValue: 0
+          StringValue: 
+          Vector3Value: {x: 0, y: 0, z: 0}
+      - Key:
+          name: NewKey000
+          hashedKey: 1092779064
+        ValueType: 0
+        Value:
+          type: 0
+          IntValue: 0
+          FloatValue: 0
+          BoolValue: 0
+          StringValue: 
+          Vector3Value: {x: 0, y: 0, z: 0}
+      - Key:
+          name: NewKey0000
+          hashedKey: -1857470312
+        ValueType: 0
+        Value:
+          type: 0
+          IntValue: 0
+          FloatValue: 0
+          BoolValue: 0
+          StringValue: 
+          Vector3Value: {x: 0, y: 0, z: 0}
+      - Key:
+          name: NewKey00000
+          hashedKey: 1582352504
+        ValueType: 0
+        Value:
+          type: 0
+          IntValue: 0
+          FloatValue: 0
+          BoolValue: 0
+          StringValue: 
+          Vector3Value: {x: 0, y: 0, z: 0}
+      - Key:
+          name: NewKey000000
+          hashedKey: -1054127784
+        ValueType: 0
+        Value:
+          type: 0
+          IntValue: 0
+          FloatValue: 0
+          BoolValue: 0
+          StringValue: 
+          Vector3Value: {x: 0, y: 0, z: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: 9112183468892618975
+      type: {class: Sequence, ns: Batmind.Tree.Nodes.Composites, asm: Batmind}
+      data:
+        _id: 1613355408
+        Priority: 0
+        GraphPosition: {x: 291, y: 92}
+        Children:
+        - rid: 9112183468892618976
+    - rid: 9112183468892618976
+      type: {class: Sequence, ns: Batmind.Tree.Nodes.Composites, asm: Batmind}
+      data:
+        _id: -1963560712
+        Priority: 0
+        GraphPosition: {x: 355, y: 225}
+        Children:
+        - rid: 9112183468892618977
+    - rid: 9112183468892618977
+      type: {class: WaitForSeconds, ns: Batmind.Tree.Nodes.Actions, asm: Batmind}
+      data:
+        _id: 1796203142
+        Priority: 21
+        GraphPosition: {x: 394, y: 431}
+        _DurationAccessor:
+          EntryKeyHash: -1873888274

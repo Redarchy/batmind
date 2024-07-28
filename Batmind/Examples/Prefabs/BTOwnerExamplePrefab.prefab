@@ -1,0 +1,170 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5637257888108960384
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5637257888108960446}
+  - component: {fileID: 5637257888108960447}
+  m_Layer: 0
+  m_Name: BTOwnerExamplePrefab
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5637257888108960446
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5637257888108960384}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5637257888108960447
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5637257888108960384}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23f670b127fe46a1afcac7775e21f0ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Tree:
+    _id: -455863176
+    Priority: 0
+    GraphPosition: {x: 0, y: 0}
+    Children:
+    - rid: 9112183468892618972
+    Blackboard:
+      _entries:
+      - Key:
+          name: fdfd
+          hashedKey: 930406837
+        ValueType: 0
+        Value:
+          type: 0
+          IntValue: 2323
+          FloatValue: 0
+          BoolValue: 0
+          StringValue: fds232
+          Vector3Value: {x: 0, y: 0, z: 0}
+      - Key:
+          name: ddsdx
+          hashedKey: -1873888274
+        ValueType: 1
+        Value:
+          type: 0
+          IntValue: 0
+          FloatValue: 2
+          BoolValue: 0
+          StringValue: 
+          Vector3Value: {x: 0, y: 0, z: 0}
+      - Key:
+          name: Nwew6ey00
+          hashedKey: -464202606
+        ValueType: 1
+        Value:
+          type: 0
+          IntValue: 0
+          FloatValue: 12
+          BoolValue: 0
+          StringValue: 
+          Vector3Value: {x: 0, y: 0, z: 0}
+      - Key:
+          name: NewKey
+          hashedKey: 1346443544
+        ValueType: 0
+        Value:
+          type: 0
+          IntValue: 0
+          FloatValue: 0
+          BoolValue: 0
+          StringValue: 
+          Vector3Value: {x: 0, y: 0, z: 0}
+      - Key:
+          name: NewKey000
+          hashedKey: 1092779064
+        ValueType: 0
+        Value:
+          type: 0
+          IntValue: 0
+          FloatValue: 0
+          BoolValue: 0
+          StringValue: 
+          Vector3Value: {x: 0, y: 0, z: 0}
+      - Key:
+          name: NewKey0000
+          hashedKey: -1857470312
+        ValueType: 0
+        Value:
+          type: 0
+          IntValue: 0
+          FloatValue: 0
+          BoolValue: 0
+          StringValue: 
+          Vector3Value: {x: 0, y: 0, z: 0}
+      - Key:
+          name: NewKey00000
+          hashedKey: 1582352504
+        ValueType: 0
+        Value:
+          type: 0
+          IntValue: 0
+          FloatValue: 0
+          BoolValue: 0
+          StringValue: 
+          Vector3Value: {x: 0, y: 0, z: 0}
+      - Key:
+          name: NewKey000000
+          hashedKey: -1054127784
+        ValueType: 0
+        Value:
+          type: 0
+          IntValue: 0
+          FloatValue: 0
+          BoolValue: 0
+          StringValue: 
+          Vector3Value: {x: 0, y: 0, z: 0}
+  _Run: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 9112183468892618972
+      type: {class: Sequence, ns: Batmind.Tree.Nodes.Composites, asm: Batmind}
+      data:
+        _id: 551562338
+        Priority: 0
+        GraphPosition: {x: 291, y: 92}
+        Children:
+        - rid: 9112183468892618973
+    - rid: 9112183468892618973
+      type: {class: Sequence, ns: Batmind.Tree.Nodes.Composites, asm: Batmind}
+      data:
+        _id: -1223555962
+        Priority: 0
+        GraphPosition: {x: 355, y: 225}
+        Children:
+        - rid: 9112183468892618974
+    - rid: 9112183468892618974
+      type: {class: WaitForSeconds, ns: Batmind.Tree.Nodes.Actions, asm: Batmind}
+      data:
+        _id: 1282953274
+        Priority: 21
+        GraphPosition: {x: 394, y: 431}
+        _DurationAccessor:
+          EntryKeyHash: -1873888274
