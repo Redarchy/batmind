@@ -10,7 +10,9 @@ namespace Batmind.Tree.Nodes
         
         public int Priority;
         public int Id => _id;
-        
+
+        protected BehaviourContext _context;
+
         public Node(int priority = 0)
         {
             _id = GetHashCode();
@@ -19,6 +21,11 @@ namespace Batmind.Tree.Nodes
         
         public virtual void Initialize() { }
         
+        public virtual void SetBehaviourContext(BehaviourContext context)
+        {
+            _context = context;
+        }
+
         public virtual Status Process() => Status.Success;
 
         public virtual void Reset() { }

@@ -2,18 +2,29 @@
 using Batmind.Tree.Nodes;
 using Batmind.Utils;
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Batmind.Editor
 {
-    [CustomEditor(typeof(BehaviourTreeOwner))]
+    [CustomEditor(typeof(BehaviourTreeOwner), true)]
     public class BehaviourTreeOwnerEditor : UnityEditor.Editor
     {
         public override VisualElement CreateInspectorGUI()
         {
             var behaviourTreeOwner = target as BehaviourTreeOwner;
             
+            var container = GetContainer();
+
+            AddButtons(container, behaviourTreeOwner);
+            AddContext(container);
+            
+            return container;
+        }
+
+        private static VisualElement GetContainer()
+        {
             var container = new VisualElement();
             container.style.backgroundColor = Color.gray;
             container.style.marginTop = 15f;
@@ -32,7 +43,27 @@ namespace Batmind.Editor
             container.style.borderTopColor = Color.black;
             container.style.borderLeftColor = Color.black;
             container.style.borderRightColor = Color.black;
+            return container;
+        }
+
+        private void AddContext(VisualElement container)
+        {
+            var contextContainer = new VisualElement();
+            contextContainer.BringToFront();
             
+            var serializedContext = serializedObject.FindProperty("_context");
+            var propertyField = new PropertyField(serializedContext);
+            var n = new InspectorElement();
+            propertyField.Bind(serializedObject);
+            propertyField.BindProperty(serializedObject);
+
+            contextContainer.Add(propertyField);
+            
+            container.Add(contextContainer);
+        }
+
+        private void AddButtons(VisualElement container, BehaviourTreeOwner behaviourTreeOwner)
+        {
             var label = new Label("Batmind Behaviour Tree Owner");
             label.style.backgroundColor = new Color(0f, 0f, 0f, 0.5f);
             label.style.color = Color.white;
@@ -98,9 +129,6 @@ namespace Batmind.Editor
             clearAndSaveButton.style.height = 50f;
             
             container.Add(clearAndSaveButton);
-            
-            return container;
         }
-
     }
 }

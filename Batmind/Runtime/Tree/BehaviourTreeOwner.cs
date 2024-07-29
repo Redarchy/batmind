@@ -1,21 +1,36 @@
-﻿using System;
-using Batmind.Tree.Nodes;
+﻿using Batmind.Tree.Nodes;
 using UnityEngine;
 
 namespace Batmind.Tree
 {
+    [System.Serializable]
+    public class BehaviourContext
+    {
+        
+    }
+    
     public class BehaviourTreeOwner : MonoBehaviour
     {
         [SerializeField] private BehaviourTree _Tree;
         [SerializeField] private bool _Run;
+
+        [SerializeReference] private BehaviourContext _context;
         
         public BehaviourTree Tree => _Tree;
 
         public bool IsRunning => _Run;
+        public BehaviourContext Context => _context;
 
-        private void Awake()
+        protected virtual void Awake()
         {
             _Tree.Initialize();
+        }
+
+        public void SetBehaviourContext(BehaviourContext context)
+        {
+            _context = context;
+            
+            _Tree.SetBehaviourContext(context);
         }
 
         private void Update()

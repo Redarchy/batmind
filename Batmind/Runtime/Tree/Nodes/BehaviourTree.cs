@@ -18,6 +18,27 @@ namespace Batmind.Tree.Nodes
         {
             SetRuntimeEntryAccessors(Children);
         }
+        
+        public override void SetBehaviourContext(BehaviourContext context)
+        {
+            base.SetBehaviourContext(context);
+            SetBehaviourContext(context, Children);
+        }
+
+        private void SetBehaviourContext(BehaviourContext context, List<Node> nodes)
+        {
+            foreach (var node in nodes)
+            {
+                if (node is Composite composite)
+                {
+                    SetBehaviourContext(context, composite.Children);
+                    continue;
+                }
+
+                node.SetBehaviourContext(context);
+            }
+
+        }
 
         private void SetRuntimeEntryAccessors(List<Node> nodes)
         {
