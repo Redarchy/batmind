@@ -14,12 +14,30 @@ namespace Batmind.Editor
 
         private static Type ActionTypeItself = typeof(ActionNode);
         
-        private static List<Type> ActionTypes = Assembly.GetAssembly(ActionTypeItself).GetTypes().Where(t => t != ActionTypeItself && ActionTypeItself.IsAssignableFrom(t)).ToList();
-        private static string[] ActionTypeNames = ActionTypes.Select(t => t.Name).ToArray();
+        private static List<Type> ActionTypes { get; set; }
+        private static string[] ActionTypeNames { get; set; }
         private static int _selectedTypeIndex = 0;
-
+        
         public static void ShowWindow()
         {
+            ActionTypes = new List<Type>();
+            
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            
+            foreach (var assembly in assemblies)
+            {
+                ActionTypes.AddRange(assembly.GetTypes().Where(t => t != ActionTypeItself && ActionTypeItself.IsAssignableFrom(t)));
+            }
+
+            ActionTypeNames = new string[ActionTypes.Count];
+
+            for (var index = 0; index < ActionTypes.Count; index++)
+            {
+                var actionType = ActionTypes[index];
+
+                ActionTypeNames[index] = actionType.Name;
+            }
+
             GetWindow<CreateActionNodeWindow>("Create Action");
         }
 
