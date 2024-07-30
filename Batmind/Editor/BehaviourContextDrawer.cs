@@ -109,7 +109,7 @@ namespace Batmind.Editor
             
             foreach (var assembly in assemblies)
             {
-                list.AddRange(assembly.GetTypes().Where(t => t != baseType && baseType.IsAssignableFrom(t)));
+                list.AddRange(assembly.GetTypes().Where(t => baseType.IsAssignableFrom(t)));
             }
             
             return list;
