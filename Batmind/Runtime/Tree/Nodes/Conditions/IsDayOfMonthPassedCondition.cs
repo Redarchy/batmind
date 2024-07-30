@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Batmind.Tree.Nodes.Conditions
 {
+    [Serializable]
     public class IsDayOfMonthPassedCondition : ConditionNode
     {
         [SerializeField] private int _DayToPass;

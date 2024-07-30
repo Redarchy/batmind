@@ -11,7 +11,7 @@ namespace Batmind.Board
     {
         private Dictionary<string, BlackboardKey> _keyRegistry = new();
 
-        [SerializeField] [JsonProperty]
+        [SerializeField]
         private List<BlackboardEntry> _entries = new();
 
         [JsonIgnore]
