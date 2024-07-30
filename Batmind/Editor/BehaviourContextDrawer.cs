@@ -58,13 +58,8 @@ namespace Batmind.Editor
             });
             
             container.Add(dropdownField);
-
-            var enumerator = property.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                var childProperty = enumerator.Current as SerializedProperty;
-                container.Add(new PropertyField(childProperty));
-            }
+            
+            container.Add(new PropertyField(property));
             
             return container;
         }
