@@ -5,6 +5,7 @@ using Batmind.Editor.Nodes;
 using Batmind.Tree.Nodes;
 using Batmind.Tree.Nodes.Actions;
 using Batmind.Tree.Nodes.Composites;
+using Batmind.Tree.Nodes.Conditions;
 using Batmind.Tree.Nodes.Decorators;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
@@ -187,9 +188,18 @@ namespace Batmind.Editor
                     return CreateDecoratorView(decoratorNode);
                 case ActionNode actionNode:
                     return CreateActionNodeView(actionNode);
+                case ConditionNode conditionNode:
+                    return CreateConditionNodeView(conditionNode);
                 default:
                     throw new Exception("Type of node is not found!");
             }
+        }
+
+        private GraphElement CreateConditionNodeView(ConditionNode conditionNode)
+        {
+            var conditionNodeView = new ConditionNodeView(conditionNode, OnSelectedNodeChanged);
+            
+            return conditionNodeView;
         }
 
         private GraphElement CreateActionNodeView(ActionNode actionNode)
@@ -404,6 +414,21 @@ namespace Batmind.Editor
                 var actionNodeView = CreateView(actionNode) as ActionNodeView;
                 actionNodeView.ExplicitNodeType = actionType;
                 AddElement(actionNodeView);
+            }
+        }
+
+        public void AddNewCondition()
+        {
+            CreateConditionNodeWindow.OnSelected = CreateConditionWithType;
+                
+            CreateConditionNodeWindow.ShowWindow();
+
+            void CreateConditionWithType(Type conditionType)
+            {
+                var conditionNode = Activator.CreateInstance(conditionType) as ConditionNode;
+                var conditionNodeView = CreateView(conditionNode) as ConditionNodeView;
+                conditionNodeView.ExplicitNodeType = conditionType;
+                AddElement(conditionNodeView);
             }
         }
     }

@@ -1,13 +1,29 @@
-using Batmind.Tree.Nodes;
+using System;
 using Batmind.Tree.Nodes.Conditions;
 
 namespace Batmind.Editor.Nodes
 {
     public class ConditionNodeView : NodeView<ConditionNode>
     {
-        public ConditionNodeView(ConditionNode conditionNode) : base(conditionNode)
+        private readonly Action<Tree.Nodes.Node> _onSelectionChanged;
+        public Type ExplicitNodeType { get; set; }
+
+        public ConditionNodeView(ConditionNode conditionNode, Action<Tree.Nodes.Node> onSelectionChanged) : base(conditionNode)
         {
-            
+            _onSelectionChanged = onSelectionChanged;
         }
+        
+        protected override void AddOutputPort()
+        {
+            // Emptied since there is no need for output nodes for action nodes.
+        }
+
+        public override void OnSelected()
+        {
+            base.OnSelected();
+            
+            _onSelectionChanged?.Invoke(TreeNode);
+        }
+
     }
 }

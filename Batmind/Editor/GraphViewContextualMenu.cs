@@ -19,6 +19,9 @@ namespace Batmind.Editor
             
             data.menu.AppendSeparator();
             data.menu.AppendAction("Action", (x) => treeGraphView.AddNewAction());
+            
+            data.menu.AppendSeparator();
+            data.menu.AppendAction("Condition", (x) => treeGraphView.AddNewCondition());
         }
     }
 }
