@@ -141,6 +141,8 @@ MonoBehaviour:
           StringValue: 
           Vector3Value: {x: 0, y: 0, z: 0}
   _Run: 0
+  _context:
+    rid: 9112183522911584261
   references:
     version: 2
     RefIds:
@@ -166,5 +168,7 @@ MonoBehaviour:
         _id: 1282953274
         Priority: 21
         GraphPosition: {x: 394, y: 431}
-        _DurationAccessor:
-          EntryKeyHash: -1873888274
+        _Duration: 0
+    - rid: 9112183522911584261
+      type: {class: BehaviourContext, ns: Batmind.Tree, asm: Batmind}
+      data: 
