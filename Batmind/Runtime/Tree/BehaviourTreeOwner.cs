@@ -54,6 +54,7 @@ namespace Batmind.Tree
         public void ClearTree()
         {
             _Tree.Children.Clear();
+            _Tree.Blackboard.ClearEntries();
         }
         
 #if UNITY_EDITOR

@@ -124,15 +124,6 @@ namespace Batmind.Board
             return key != null;
         }
         
-#if UNITY_EDITOR
-        public void OnValidate()
-        {
-            foreach (var entry in _entries)
-            {
-                entry.OnValidate();
-            }
-        }
-#endif
         public void GetAllEntriesWithValueTypeNonAlloc(AnyValue.ValueType valueType, List<BlackboardEntry> entries)
         {
             foreach (var entry in _entries)
@@ -144,5 +135,20 @@ namespace Batmind.Board
             }
         }
 
+#if UNITY_EDITOR
+        public void OnValidate()
+        {
+            foreach (var entry in _entries)
+            {
+                entry.OnValidate();
+            }
+        }
+        
+        public void ClearEntries()
+        {
+            _entries.Clear();
+        }
+
+#endif
     }
 }
