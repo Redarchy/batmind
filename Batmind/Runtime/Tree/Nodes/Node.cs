@@ -6,16 +6,11 @@ namespace Batmind.Tree.Nodes
     [Serializable]
     public class Node
     {
-        [SerializeField, HideInInspector] private int _id;
-        
         public int Priority;
-        public int Id => _id;
-
         protected BehaviourContext _context;
 
         public Node(int priority = 0)
         {
-            _id = GetHashCode();
             Priority = priority;
         }
         
