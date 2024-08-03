@@ -69,7 +69,17 @@ namespace Batmind.Editor
             {
                 AddElement(CreateView(node));
             }
+
+            CreateValidatorGraph();
         }
+
+        private void CreateValidatorGraph()
+        {
+            var validatorNode = _tree.Validator;
+            AddElement(CreateView(validatorNode));
+        }
+
+        #region Save
 
         private void SaveBehaviourTree()
         {
@@ -79,25 +89,28 @@ namespace Batmind.Editor
             {
                 Priority = 0,
                 GraphPosition = default,
+                Validator = new Validator(),
                 Children = new List<Node>(),
                 Blackboard = _tree.Blackboard
             };
 
             foreach (var nodeView in startNodes)
             {
-                tree.Children.Add(nodeView.ImplicitTreeNode);
+                if (nodeView is ValidatorNodeView validatorNodeView)
+                {
+                    tree.Validator = validatorNodeView.TreeNode;
+                }
+                else
+                {
+                    tree.Children.Add(nodeView.ImplicitTreeNode);
+                }
 
                 IterateThroughConnections(nodeView);
             }
 
             _tree = tree;
         }
-
-        private void OnSelectedNodeChanged(Node node)
-        {
-            _onSelectionChanged?.Invoke(node);
-        }
-
+        
         private List<NodeView> GetStartNodes()
         {
             var startNodes = new List<NodeView>();
@@ -172,7 +185,34 @@ namespace Batmind.Editor
                     IterateThroughConnections(connectedNodeView);
                 }
             }
+            else if (nodeView is ValidatorNodeView validatorNodeView)
+            {
+                validatorNodeView.TreeNode.Children.Clear();
+
+                var connectedNodes = outputPort.connections.ToList();
+                var connectedNodesCount = connectedNodes.Count;
+                
+                for (var i = 0; i < connectedNodesCount; i++)
+                {
+                    var connectedNodeView = connectedNodes[i].input.node as NodeView;
+                    if (connectedNodeView == null)
+                    {
+                        continue;
+                    }
+                    
+                    validatorNodeView.TreeNode.AddChild(connectedNodeView.ImplicitTreeNode);
+                    IterateThroughConnections(connectedNodeView);
+                }
+            }
         }
+
+        #endregion
+
+        private void OnSelectedNodeChanged(Node node)
+        {
+            _onSelectionChanged?.Invoke(node);
+        }
+
 
         #region View Creation
 
@@ -229,6 +269,9 @@ namespace Batmind.Editor
             {
                 case Selector selector:
                     compositeNodeView = new SelectorNodeView(selector);
+                    break;
+                case Validator validator:
+                    compositeNodeView = new ValidatorNodeView(validator);
                     break;
                 case PrioritySelector prioritySelector:
                     compositeNodeView = new PrioritySelectorNodeView(prioritySelector);
@@ -346,6 +389,8 @@ namespace Batmind.Editor
             
         }
 
+        #region Node View Adders
+
         public void AddNewSelector()
         {
             var selector = new Selector
@@ -431,6 +476,8 @@ namespace Batmind.Editor
                 AddElement(conditionNodeView);
             }
         }
+
+        #endregion
     }
 
 }

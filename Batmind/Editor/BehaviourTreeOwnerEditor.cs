@@ -77,6 +77,7 @@ namespace Batmind.Editor
             container.Add(label);
 
             var runToggle = new Toggle("Run");
+            runToggle.value = behaviourTreeOwner.IsRunning;
             runToggle.RegisterValueChangedCallback(value =>
             {
                 behaviourTreeOwner.SetRunning(value.newValue);
@@ -88,6 +89,19 @@ namespace Batmind.Editor
             runToggle.style.color = Color.cyan;
             
             container.Add(runToggle);
+
+            var validateToggle = new Toggle("Validate");
+            validateToggle.value = behaviourTreeOwner.IsValidating;
+            validateToggle.RegisterValueChangedCallback(value =>
+            {
+                behaviourTreeOwner.SetValidation(value.newValue);
+            });
+            validateToggle.style.color = Color.black;
+            validateToggle.style.alignSelf = Align.Center;
+            validateToggle.style.fontSize = 20f;
+            validateToggle.style.color = Color.cyan;
+            
+            container.Add(validateToggle);
             
             var openEditorButton = new Button(() =>
             {

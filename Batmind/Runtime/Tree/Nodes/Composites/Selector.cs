@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Batmind.Tree.Nodes.Composites
+﻿namespace Batmind.Tree.Nodes.Composites
 {
     [System.Serializable]
     public class Selector : Composite

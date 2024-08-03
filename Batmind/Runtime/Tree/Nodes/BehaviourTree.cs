@@ -9,6 +9,7 @@ namespace Batmind.Tree.Nodes
     [System.Serializable]
     public class BehaviourTree : Node
     {
+        [SerializeField] public Validator Validator;
         [SerializeReference] public List<Node> Children;
         [SerializeField] public Blackboard Blackboard;
         
@@ -37,7 +38,6 @@ namespace Batmind.Tree.Nodes
 
                 node.SetBehaviourContext(context);
             }
-
         }
 
         private void SetRuntimeEntryAccessors(List<Node> nodes)
@@ -110,6 +110,14 @@ namespace Batmind.Tree.Nodes
             }
 
             return Status.Success;
+        }
+
+        public void Validate()
+        {
+            if (Validator.Process() == Status.Failure)
+            {
+                Reset();
+            }
         }
 
         public override void Reset()

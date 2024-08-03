@@ -3,22 +3,18 @@ using UnityEngine;
 
 namespace Batmind.Tree
 {
-    [System.Serializable]
-    public class BehaviourContext
-    {
-        
-    }
-    
     public class BehaviourTreeOwner : MonoBehaviour
     {
         [SerializeField] private BehaviourTree _Tree;
         [SerializeField] private bool _Run;
+        [SerializeField] private bool _Validate;
 
         [SerializeReference] private BehaviourContext _context;
         
         public BehaviourTree Tree => _Tree;
 
         public bool IsRunning => _Run;
+        public bool IsValidating => _Validate;
         public BehaviourContext Context => _context;
 
         protected virtual void Awake()
@@ -37,6 +33,11 @@ namespace Batmind.Tree
         {
             if (_Run)
             {
+                if (_Validate)
+                {
+                    _Tree.Validate();
+                }
+
                 _Tree.Process();
             }
         }
@@ -44,6 +45,11 @@ namespace Batmind.Tree
         public void SetRunning(bool run)
         {
             _Run = run;
+        }
+
+        public void SetValidation(bool validate)
+        {
+            _Validate = validate;
         }
         
         public void SetTree(BehaviourTree tree)
@@ -55,6 +61,7 @@ namespace Batmind.Tree
         {
             _Tree.Children.Clear();
             _Tree.Blackboard.ClearEntries();
+            _Tree.Validator.Children.Clear();
         }
         
 #if UNITY_EDITOR
