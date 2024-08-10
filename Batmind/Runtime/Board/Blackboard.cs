@@ -134,6 +134,11 @@ namespace Batmind.Board
                 }
             }
         }
+        
+        public void ClearEntries()
+        {
+            _entries.Clear();
+        }
 
 #if UNITY_EDITOR
         public void OnValidate()
@@ -142,11 +147,6 @@ namespace Batmind.Board
             {
                 entry.OnValidate();
             }
-        }
-        
-        public void ClearEntries()
-        {
-            _entries.Clear();
         }
 
 #endif
