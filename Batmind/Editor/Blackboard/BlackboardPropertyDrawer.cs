@@ -112,44 +112,26 @@ namespace Batmind.Editor
             
                 var valueTypeField = new PropertyField(valueTypeProperty, "");
                 valueTypeField.style.width = elementPercentageWidth;
-                valueTypeField.RegisterValueChangeCallback(e => UpdateValues(serializedObject));
+                valueTypeField.RegisterValueChangeCallback(e =>
+                {
+                    var currentValueField = elementContainer.Q("value_field");
+                    if (currentValueField != null)
+                    {
+                        elementContainer.Remove(currentValueField);
+                    }
+
+                    AddValueFieldVisualElement(valueTypeProperty, valueProperty, elementContainer);
+                    
+                    UpdateValues(serializedObject);
+                    
+                    _container.MarkDirtyRepaint();
+                    property.serializedObject.ApplyModifiedProperties();
+                    property.serializedObject.Update();
+
+                });
                 elementContainer.Add(valueTypeField);
 
-                switch ((AnyValue.ValueType) valueTypeProperty.enumValueIndex)
-                {
-                    case AnyValue.ValueType.Int:
-                        var intValue = valueProperty.FindPropertyRelative("IntValue");
-                        var intField = new PropertyField(intValue, "");
-                        intField.style.width = elementPercentageWidth;
-                        elementContainer.Add(intField);
-                        break;
-                    case AnyValue.ValueType.Float:
-                        var floatValue = valueProperty.FindPropertyRelative("FloatValue");
-                        var floatField = new PropertyField(floatValue, "");
-                        floatField.style.width = elementPercentageWidth;
-                        elementContainer.Add(floatField);
-                        break;
-                    case AnyValue.ValueType.Bool:
-                        var boolValue = valueProperty.FindPropertyRelative("BoolValue");
-                        var boolField = new PropertyField(boolValue, "");
-                        boolField.style.width = elementPercentageWidth;
-                        elementContainer.Add(boolField);
-                        break;
-                    case AnyValue.ValueType.String:
-                        var stringValue = valueProperty.FindPropertyRelative("StringValue");
-                        var stringField = new PropertyField(stringValue, "");
-                        stringField.style.width = elementPercentageWidth;
-                        elementContainer.Add(stringField);
-                        break;
-                    case AnyValue.ValueType.Vector3:
-                        var vector3Value = valueProperty.FindPropertyRelative("Vector3Value");
-                        var vector3Field = new PropertyField(vector3Value, "");
-                        vector3Field.style.width = elementPercentageWidth;
-                        elementContainer.Add(vector3Field);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                AddValueFieldVisualElement(valueTypeProperty, valueProperty, elementContainer);
             
                 elementContainer.style.flexDirection = FlexDirection.Row;
                 elementContainer.style.width = _container.style.width;
@@ -161,8 +143,7 @@ namespace Batmind.Editor
                 elementContainer.style.backgroundColor = new Color(0f, 0f, 0f, 0.35f);
 
                 _container.Add(elementContainer);
-                _container.Add(elementContainer);
-                _container.Add(elementContainer);
+
                 _container.style.alignItems = Align.FlexStart;
             }
             
@@ -181,6 +162,55 @@ namespace Batmind.Editor
             EditorUtility.SetDirty(serializedObject.targetObject);
             property.serializedObject.ApplyModifiedProperties();
             property.serializedObject.Update();
+
+            void AddValueFieldVisualElement(SerializedProperty valueTypeProperty, SerializedProperty valueProperty, VisualElement elementContainer)
+            {
+                    switch ((AnyValue.ValueType) valueTypeProperty.enumValueIndex)
+                    {
+                        case AnyValue.ValueType.Int:
+                            var intValue = valueProperty.FindPropertyRelative("IntValue");
+                            var intField = new PropertyField(intValue, "");
+                            intField.BindProperty(intValue);
+                            intField.style.width = elementPercentageWidth;
+                            intField.name = "value_field";
+                            elementContainer.Add(intField);
+                            break;
+                        case AnyValue.ValueType.Float:
+                            var floatValue = valueProperty.FindPropertyRelative("FloatValue");
+                            var floatField = new PropertyField(floatValue, "");
+                            floatField.BindProperty(floatValue);
+                            floatField.style.width = elementPercentageWidth;
+                            floatField.name = "value_field";
+                            elementContainer.Add(floatField);
+                            break;
+                        case AnyValue.ValueType.Bool:
+                            var boolValue = valueProperty.FindPropertyRelative("BoolValue");
+                            var boolField = new PropertyField(boolValue, "");
+                            boolField.BindProperty(boolValue);
+                            boolField.style.width = elementPercentageWidth;
+                            boolField.name = "value_field";
+                            elementContainer.Add(boolField);
+                            break;
+                        case AnyValue.ValueType.String:
+                            var stringValue = valueProperty.FindPropertyRelative("StringValue");
+                            var stringField = new PropertyField(stringValue, "");
+                            stringField.BindProperty(stringValue);
+                            stringField.style.width = elementPercentageWidth;
+                            stringField.name = "value_field";
+                            elementContainer.Add(stringField);
+                            break;
+                        case AnyValue.ValueType.Vector3:
+                            var vector3Value = valueProperty.FindPropertyRelative("Vector3Value");
+                            var vector3Field = new PropertyField(vector3Value, "");
+                            vector3Field.BindProperty(vector3Value);
+                            vector3Field.style.width = elementPercentageWidth;
+                            vector3Field.name = "value_field";
+                            elementContainer.Add(vector3Field);
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+            }
         }
 
         private void UpdateValues(SerializedObject serializedObject)
