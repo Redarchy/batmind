@@ -23,6 +23,7 @@ namespace Batmind.Tree.Nodes
         public override void SetBehaviourContext(BehaviourContext context)
         {
             base.SetBehaviourContext(context);
+            Validator.SetBehaviourContext(context);
             SetBehaviourContext(context, Children);
         }
 

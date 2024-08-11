@@ -1,4 +1,6 @@
-﻿namespace Batmind.Tree.Nodes.Composites
+﻿using System.Collections.Generic;
+
+namespace Batmind.Tree.Nodes.Composites
 {
     [System.Serializable]
     public class Validator : Composite 
@@ -21,5 +23,26 @@
             
             return Status.Success;
         }
+        
+        public override void SetBehaviourContext(BehaviourContext context)
+        {
+            _context = context;
+            SetBehaviourContext(context, Children);            
+        }
+
+        private void SetBehaviourContext(BehaviourContext context, List<Node> nodes)
+        {
+            foreach (var node in nodes)
+            {
+                if (node is Composite composite)
+                {
+                    SetBehaviourContext(context, composite.Children);
+                    continue;
+                }
+
+                node.SetBehaviourContext(context);
+            }
+        }
+
     }
 }
