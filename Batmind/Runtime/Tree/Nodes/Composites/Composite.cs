@@ -6,7 +6,7 @@ namespace Batmind.Tree.Nodes.Composites
     [System.Serializable]
     public abstract class Composite : Node
     {
-        [SerializeReference] public List<Node> Children;
+        [SerializeReference] [HideInInspector] public List<Node> Children;
         
         protected int _currentChild = 0;
         

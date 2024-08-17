@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using Edge = UnityEditor.Experimental.GraphView.Edge;
@@ -17,6 +18,7 @@ namespace Batmind.Editor
         protected virtual Port.Capacity OutputPortCapacity => Port.Capacity.Single;
         public Tree.Nodes.Node ImplicitTreeNode { get; protected set; }
         public List<Edge> Edges => _edges;
+        protected Action<Tree.Nodes.Node> OnSelectionChanged { get; set; }
 
 
         protected void SetBaseView(Tree.Nodes.Node treeNode)
@@ -90,8 +92,10 @@ namespace Batmind.Editor
         
         public TTreeNode TreeNode { get; private set; }
 
-        public NodeView(Tree.Nodes.Node treeNode)
+        public NodeView(Tree.Nodes.Node treeNode, Action<Tree.Nodes.Node> onSelectionChanged)
         {
+            OnSelectionChanged = onSelectionChanged;
+
             TreeNode = (TTreeNode) treeNode;
             SetBaseView(treeNode);
             SetPosition(new Rect(TreeNode.GraphPosition, Constants.DefaultNodeSize));
@@ -106,6 +110,13 @@ namespace Batmind.Editor
         protected override void SetStyle()
         {
             
+        }
+        
+        public override void OnSelected()
+        {
+            base.OnSelected();
+            
+            OnSelectionChanged?.Invoke(TreeNode);
         }
     }
 

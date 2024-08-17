@@ -1,3 +1,4 @@
+using System;
 using Batmind.Tree.Nodes.Composites;
 using UnityEditor.Experimental.GraphView;
 
@@ -7,7 +8,8 @@ namespace Batmind.Editor.Nodes
     {
         protected override Port.Capacity OutputPortCapacity => Port.Capacity.Multi;
 
-        public RandomOrderSelectorNodeView(RandomOrderSelector randomOrderSelector) : base(randomOrderSelector)
+        public RandomOrderSelectorNodeView(RandomOrderSelector randomOrderSelector, Action<Tree.Nodes.Node> onSelectedNodeChanged) 
+            : base(randomOrderSelector, onSelectedNodeChanged)
         {
             
         }

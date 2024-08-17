@@ -59,7 +59,7 @@ namespace Batmind.Tree
         
         public void ClearTree()
         {
-            _Tree.Children.Clear();
+            _Tree.Root.Children.Clear();
             _Tree.Blackboard.ClearEntries();
             _Tree.Validator.Children.Clear();
         }

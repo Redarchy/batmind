@@ -10,21 +10,21 @@ namespace Batmind.Tree.Nodes
     public class BehaviourTree : Node
     {
         [SerializeField] public Validator Validator;
-        [SerializeReference] public List<Node> Children;
+        [SerializeField] public Root Root;
         [SerializeField] public Blackboard Blackboard;
         
         protected int _currentChild = 0;
 
         public override void Initialize()
         {
-            SetRuntimeEntryAccessors(Children);
+            SetRuntimeEntryAccessors(Root.Children);
         }
         
         public override void SetBehaviourContext(BehaviourContext context)
         {
             base.SetBehaviourContext(context);
             Validator.SetBehaviourContext(context);
-            SetBehaviourContext(context, Children);
+            SetBehaviourContext(context, Root.Children);
         }
 
         private void SetBehaviourContext(BehaviourContext context, List<Node> nodes)
@@ -88,7 +88,7 @@ namespace Batmind.Tree.Nodes
             }
         }
         
-        public void AddChild(Node child) => Children.Add(child);
+        public void AddChild(Node child) => Root.Children.Add(child);
 
         public override Status Process()
         {
@@ -98,9 +98,9 @@ namespace Batmind.Tree.Nodes
             //
             // return status;
 
-            while (_currentChild < Children.Count)
+            while (_currentChild < Root.Children.Count)
             {
-                var status = Children[_currentChild].Process();
+                var status = Root.Children[_currentChild].Process();
 
                 if (status != Status.Success)
                 {
@@ -123,7 +123,7 @@ namespace Batmind.Tree.Nodes
 
         public override void Reset()
         {
-            foreach (var child in Children)
+            foreach (var child in Root.Children)
             {
                 child.Reset();
             }

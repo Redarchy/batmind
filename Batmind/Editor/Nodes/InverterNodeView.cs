@@ -1,3 +1,4 @@
+using System;
 using Batmind.Tree.Nodes.Decorators;
 using UnityEditor.Experimental.GraphView;
 
@@ -7,7 +8,8 @@ namespace Batmind.Editor.Nodes
     {
         protected override Port.Capacity OutputPortCapacity => Port.Capacity.Single;
 
-        public InverterNodeView(Inverter inverter) : base(inverter)
+        public InverterNodeView(Inverter inverter, Action<Tree.Nodes.Node> onSelectionChanged) 
+            : base(inverter, onSelectionChanged)
         {
             
         }

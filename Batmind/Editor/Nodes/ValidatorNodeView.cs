@@ -1,4 +1,5 @@
-﻿using Batmind.Tree.Nodes.Composites;
+﻿using System;
+using Batmind.Tree.Nodes.Composites;
 using UnityEditor.Experimental.GraphView;
 
 namespace Batmind.Editor.Nodes
@@ -7,7 +8,8 @@ namespace Batmind.Editor.Nodes
     {
         protected override Port.Capacity OutputPortCapacity => Port.Capacity.Multi;
 
-        public ValidatorNodeView(Validator validator) : base(validator)
+        public ValidatorNodeView(Validator validator, Action<Tree.Nodes.Node> onSelectionChanged) 
+            : base(validator, onSelectionChanged)
         {
             
         }

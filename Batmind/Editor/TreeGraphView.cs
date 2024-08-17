@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Batmind.Batmind.Editor.Nodes;
 using Batmind.Editor.Nodes;
 using Batmind.Tree.Nodes;
 using Batmind.Tree.Nodes.Actions;
@@ -65,12 +66,8 @@ namespace Batmind.Editor
         
         private void CreateGraph()
         {
-            foreach (var node in _tree.Children)
-            {
-                AddElement(CreateView(node));
-            }
-
             CreateValidatorGraph();
+            AddElement(CreateView(_tree.Root));
         }
 
         private void CreateValidatorGraph()
@@ -83,57 +80,50 @@ namespace Batmind.Editor
 
         private void SaveBehaviourTree()
         {
-            var startNodes = GetStartNodes();
+            var validatorNodeView = GetValidatorNodeView();
+            var rootNodeView = GetRootNode();
 
             var tree = new BehaviourTree
             {
                 Priority = 0,
                 GraphPosition = default,
                 Validator = new Validator(),
-                Children = new List<Node>(),
+                Root = new Root(),
                 Blackboard = _tree.Blackboard
             };
 
-            foreach (var nodeView in startNodes)
-            {
-                if (nodeView is ValidatorNodeView validatorNodeView)
-                {
-                    tree.Validator = validatorNodeView.TreeNode;
-                }
-                else
-                {
-                    tree.Children.Add(nodeView.ImplicitTreeNode);
-                }
+            tree.Validator = validatorNodeView.TreeNode;
+            tree.Root = rootNodeView.TreeNode;
 
-                IterateThroughConnections(nodeView);
-            }
-
+            IterateThroughConnections(rootNodeView);
+            
             _tree = tree;
         }
         
-        private List<NodeView> GetStartNodes()
+        private RootNodeView GetRootNode()
         {
-            var startNodes = new List<NodeView>();
-
             foreach (var node in graphElements)
             {
-                if (node is not NodeView nodeView)
+                if (node is RootNodeView rootNodeView)
                 {
-                    continue;
-                }
-
-                if (nodeView.InputPort == null)
-                {
-                    continue;
-                }
-
-                if (!nodeView.InputPort.connected && nodeView.OutputPort.connected)
-                {
-                    startNodes.Add(nodeView);
+                    return rootNodeView;
                 }
             }
 
-            return startNodes;
+            return null;
+        }
+        
+        private ValidatorNodeView GetValidatorNodeView()
+        {
+            foreach (var node in graphElements)
+            {
+                if (node is ValidatorNodeView validatorNodeView)
+                {
+                    return validatorNodeView;
+                }
+            }
+
+            return null;
         }
 
         private void IterateThroughConnections(NodeView nodeView)
@@ -146,8 +136,29 @@ namespace Batmind.Editor
             }
 
             nodeView.ImplicitTreeNode.GraphPosition = nodeView.GetPosition().position;
-            
-            if (nodeView is SequenceNodeView sequenceNodeView)
+            if (nodeView is RootNodeView rootNodeView)
+            {
+                rootNodeView.TreeNode.Children.Clear();
+                var connectedNodes = outputPort.connections.OrderBy(connection =>
+                {
+                    return (connection.input.node as NodeView).ImplicitTreeNode.Priority;
+                }).ToList();
+                
+                var connectedNodesCount = connectedNodes.Count;
+                
+                for (var i = 0; i < connectedNodesCount; i++)
+                {
+                    var connectedNodeView = connectedNodes[i].input.node as NodeView;
+                    if (connectedNodeView == null)
+                    {
+                        continue;
+                    }
+                    
+                    rootNodeView.TreeNode.AddChild(connectedNodeView.ImplicitTreeNode);
+                    IterateThroughConnections(connectedNodeView);
+                }
+            }
+            else if (nodeView is SequenceNodeView sequenceNodeView)
             {
                 sequenceNodeView.TreeNode.Children.Clear();
                 
@@ -253,7 +264,7 @@ namespace Batmind.Editor
         {
             var subTreeNodeView = new SubTreeNodeView(treeNode);
 
-            foreach (var node in treeNode.Children)
+            foreach (var node in treeNode.Root.Children)
             {
                 AddElement(CreateView(node));
             }
@@ -267,20 +278,23 @@ namespace Batmind.Editor
             
             switch (compositeNode)
             {
+                case Root root:
+                    compositeNodeView = new RootNodeView(root, OnSelectedNodeChanged);
+                    break;
                 case Selector selector:
-                    compositeNodeView = new SelectorNodeView(selector);
+                    compositeNodeView = new SelectorNodeView(selector, OnSelectedNodeChanged);
                     break;
                 case Validator validator:
-                    compositeNodeView = new ValidatorNodeView(validator);
+                    compositeNodeView = new ValidatorNodeView(validator, OnSelectedNodeChanged);
                     break;
                 case PrioritySelector prioritySelector:
-                    compositeNodeView = new PrioritySelectorNodeView(prioritySelector);
+                    compositeNodeView = new PrioritySelectorNodeView(prioritySelector, OnSelectedNodeChanged);
                     break;
                 case RandomOrderSelector randomOrderSelector:
-                    compositeNodeView = new RandomOrderSelectorNodeView(randomOrderSelector);
+                    compositeNodeView = new RandomOrderSelectorNodeView(randomOrderSelector, OnSelectedNodeChanged);
                     break;
                 case Sequence sequence:
-                    compositeNodeView = new SequenceNodeView(sequence);
+                    compositeNodeView = new SequenceNodeView(sequence, OnSelectedNodeChanged);
                     break;
                 default:
                     throw new Exception("Type of node is not found!");
@@ -306,7 +320,7 @@ namespace Batmind.Editor
             switch (node)
             {
                 case Inverter inverter:
-                    return new InverterNodeView(inverter);
+                    return new InverterNodeView(inverter, OnSelectedNodeChanged);
                 default:
                     throw new Exception("Type of node is not found!");
             }
@@ -321,7 +335,7 @@ namespace Batmind.Editor
             AddToolbarButton(buttonToolbar, "Clear", () =>
             {
                 graphElements.ForEach(RemoveElement);                
-                _tree.Children.Clear();
+                _tree.Root.Children.Clear();
             });
             
             AddToolbarButton(buttonToolbar, "Save Graph", () =>
@@ -400,7 +414,7 @@ namespace Batmind.Editor
                 Children = new List<Node>()
             };
             
-            _tree.Children.Add(selector);
+            _tree.Root.Children.Add(selector);
 
             AddElement(CreateCompositeView(selector));
         }
@@ -414,7 +428,7 @@ namespace Batmind.Editor
                 Children = new List<Node>()
             };
             
-            _tree.Children.Add(selector);
+            _tree.Root.Children.Add(selector);
 
             AddElement(CreateCompositeView(selector));
         }
@@ -428,7 +442,7 @@ namespace Batmind.Editor
                 Children = new List<Node>()
             };
             
-            _tree.Children.Add(selector);
+            _tree.Root.Children.Add(selector);
 
             AddElement(CreateCompositeView(selector));
         }
@@ -442,7 +456,7 @@ namespace Batmind.Editor
                 Children = new List<Node>()
             };
             
-            _tree.Children.Add(sequence);
+            _tree.Root.Children.Add(sequence);
             
             AddElement(CreateCompositeView(sequence));
         }

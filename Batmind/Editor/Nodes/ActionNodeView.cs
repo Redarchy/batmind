@@ -8,21 +8,15 @@ namespace Batmind.Editor.Nodes
         private readonly Action<Tree.Nodes.Node> _onSelectionChanged;
         public Type ExplicitNodeType { get; set; }
 
-        public ActionNodeView(ActionNode actionNode, Action<Tree.Nodes.Node> onSelectionChanged) : base(actionNode)
+        public ActionNodeView(ActionNode actionNode, Action<Tree.Nodes.Node> onSelectionChanged) 
+            : base(actionNode, onSelectionChanged)
         {
-            _onSelectionChanged = onSelectionChanged;
+            
         }
         
         protected override void AddOutputPort()
         {
             // Emptied since there is no need for output nodes for action nodes.
-        }
-
-        public override void OnSelected()
-        {
-            base.OnSelected();
-            
-            _onSelectionChanged?.Invoke(TreeNode);
         }
     }
 }
