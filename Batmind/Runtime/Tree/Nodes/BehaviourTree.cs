@@ -97,20 +97,20 @@ namespace Batmind.Tree.Nodes
             // _currentChild = (_currentChild + 1) % Children.Count;
             //
             // return status;
+            //
+            // while (_currentChild < Root.Children.Count)
+            // {
+            //     var status = Root.Children[_currentChild].Process();
+            //
+            //     if (status != Status.Success)
+            //     {
+            //         return status;
+            //     }
+            //
+            //     _currentChild++;
+            // }
 
-            while (_currentChild < Root.Children.Count)
-            {
-                var status = Root.Children[_currentChild].Process();
-
-                if (status != Status.Success)
-                {
-                    return status;
-                }
-
-                _currentChild++;
-            }
-
-            return Status.Success;
+            return Root.Process();
         }
 
         public void Validate()
