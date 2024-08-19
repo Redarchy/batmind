@@ -14,6 +14,11 @@ namespace Batmind.Editor.Nodes
             
         }
 
+        protected override void AddInputPort()
+        {
+            _inputPort = null;
+        }
+
         protected override void SetStyle()
         {
             

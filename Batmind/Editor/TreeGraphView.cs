@@ -23,6 +23,7 @@ namespace Batmind.Editor
         private Action _onTreeCleared;
         private Action<BehaviourTree> _onTreeSaved;
         private Action<BehaviourTree, string> _onTreeSavedAsAsset;
+        private Vector2 _mousePosition;
 
         public TreeGraphView(BehaviourTree tree)
         {
@@ -36,6 +37,8 @@ namespace Batmind.Editor
             this.AddManipulator(new RectangleSelector());
             this.AddManipulator(new FreehandSelector());
             this.AddManipulator(new EdgeManipulator());
+            
+            this.RegisterCallback<MouseUpEvent>(OnMouseUp);
 
             CreateToolbar();
             CreateGraph();
@@ -44,6 +47,12 @@ namespace Batmind.Editor
             Insert(0, background);
             background.StretchToParentSize();
             background.SendToBack();
+        }
+
+        private void OnMouseUp(MouseUpEvent mouseUpEvent)
+        {
+            var mousePosition = mouseUpEvent.mousePosition;
+            _mousePosition = parent.ChangeCoordinatesTo(contentViewContainer, mousePosition);
         }
 
         public void SetCallbacks(Action<BehaviourTree> onTreeSaved, Action<BehaviourTree, string> onTreeSavedAsAsset,
@@ -416,7 +425,13 @@ namespace Batmind.Editor
             
             _tree.Root.Children.Add(selector);
 
-            AddElement(CreateCompositeView(selector));
+            var compositeView = CreateCompositeView(selector);
+            var position = compositeView.GetPosition();
+            position.position = _mousePosition;
+
+            AddElement(compositeView);
+            
+            compositeView.SetPosition(position);
         }
 
         public void AddNewPrioritySelector()
