@@ -32,7 +32,10 @@ namespace Batmind.Editor
             SetupZoom(ContentZoomer.DefaultMinScale, ContentZoomer.DefaultMaxScale);
             
             this.AddManipulator(new ContentDragger());
-            this.AddManipulator(new ContentZoomer());
+            var contentZoomer = new ContentZoomer();
+            contentZoomer.maxScale *= 2f;
+            
+            this.AddManipulator(contentZoomer);
             this.AddManipulator(new SelectionDragger());
             this.AddManipulator(new RectangleSelector());
             this.AddManipulator(new FreehandSelector());
@@ -147,7 +150,7 @@ namespace Batmind.Editor
             nodeView.ImplicitTreeNode.GraphPosition = nodeView.GetPosition().position;
             if (nodeView is RootNodeView rootNodeView)
             {
-                rootNodeView.TreeNode.Children.Clear();
+                rootNodeView.TreeNode.Clear();
                 var connectedNodes = outputPort.connections.OrderBy(connection =>
                 {
                     return (connection.input.node as NodeView).ImplicitTreeNode.Priority;
@@ -162,8 +165,8 @@ namespace Batmind.Editor
                     {
                         continue;
                     }
-                    
-                    rootNodeView.TreeNode.AddChild(connectedNodeView.ImplicitTreeNode);
+
+                    rootNodeView.TreeNode._Child = connectedNodeView.ImplicitTreeNode;
                     IterateThroughConnections(connectedNodeView);
                 }
             }
@@ -236,12 +239,12 @@ namespace Batmind.Editor
 
         #region View Creation
 
-        private GraphElement CreateView(Node node)
+        private NodeView CreateView(Node node)
         {
             switch (node)
             {
-                case BehaviourTree behaviourTree:
-                    return CreateSubTreeView(behaviourTree);
+                case Root rootNode:
+                    return CreateRootNodeView(rootNode);
                 case Composite compositeNode:
                     return CreateCompositeView(compositeNode);
                 case DecoratorNode decoratorNode:
@@ -255,41 +258,48 @@ namespace Batmind.Editor
             }
         }
 
-        private GraphElement CreateConditionNodeView(ConditionNode conditionNode)
+        private NodeView CreateRootNodeView(Root rootNode)
+        {
+            var rootNodeView = new RootNodeView(rootNode, OnSelectedNodeChanged);
+
+            if (rootNode._Child == null)
+            {
+                return rootNodeView;
+            }
+
+            var childView = CreateView(rootNode._Child);
+            AddElement(childView);
+
+            var childNodeView = childView as NodeView;
+            
+            var edge = new Edge();
+            rootNodeView.ConnectOutputTo(edge);
+            childNodeView.ConnectInputTo(edge);
+            Add(edge);
+            
+            return rootNodeView;
+        }
+
+        private NodeView CreateConditionNodeView(ConditionNode conditionNode)
         {
             var conditionNodeView = new ConditionNodeView(conditionNode, OnSelectedNodeChanged);
             
             return conditionNodeView;
         }
 
-        private GraphElement CreateActionNodeView(ActionNode actionNode)
+        private NodeView CreateActionNodeView(ActionNode actionNode)
         {
             var actionNodeView = new ActionNodeView(actionNode, OnSelectedNodeChanged);
             
             return actionNodeView;
         }
 
-        private GraphElement CreateSubTreeView(BehaviourTree treeNode)
-        {
-            var subTreeNodeView = new SubTreeNodeView(treeNode);
-
-            foreach (var node in treeNode.Root.Children)
-            {
-                AddElement(CreateView(node));
-            }
-            
-            return subTreeNodeView;
-        }
-
-        private GraphElement CreateCompositeView(Composite compositeNode)
+        private NodeView CreateCompositeView(Composite compositeNode)
         {
             NodeView compositeNodeView = null;
             
             switch (compositeNode)
             {
-                case Root root:
-                    compositeNodeView = new RootNodeView(root, OnSelectedNodeChanged);
-                    break;
                 case Selector selector:
                     compositeNodeView = new SelectorNodeView(selector, OnSelectedNodeChanged);
                     break;
@@ -324,7 +334,7 @@ namespace Batmind.Editor
             return compositeNodeView;
         }
         
-        private GraphElement CreateDecoratorView(Node node)
+        private NodeView CreateDecoratorView(Node node)
         {
             switch (node)
             {
@@ -341,10 +351,25 @@ namespace Batmind.Editor
         {
             var buttonToolbar = new Toolbar();
 
-            AddToolbarButton(buttonToolbar, "Clear", () =>
+            AddToolbarButton(buttonToolbar, "Clear Graph", () =>
             {
-                graphElements.ForEach(RemoveElement);                
-                _tree.Root.Children.Clear();
+                var nodeViewsToRemove = graphElements
+                    .Where(view => view is NodeView && 
+                                view is not RootNodeView && 
+                                view is not ValidatorNodeView)
+                    .ToList();
+                foreach (var nodeView in nodeViewsToRemove)
+                {
+                    RemoveElement(nodeView);
+                }
+                
+                _tree.Root.Clear();
+                _tree.Validator.Clear();
+            });
+            
+            AddToolbarButton(buttonToolbar, "Clear Blackboard", () =>
+            {
+                _tree.Blackboard.ClearEntries();
             });
             
             AddToolbarButton(buttonToolbar, "Save Graph", () =>
@@ -352,6 +377,7 @@ namespace Batmind.Editor
                 SaveBehaviourTree();
                 _onTreeSaved?.Invoke(_tree);
             });
+            
             AddToolbarButton(buttonToolbar, "Save as Asset", () =>
             {
                 SaveAsAssetWindow.OnSaved += savedFileName =>
@@ -423,8 +449,6 @@ namespace Batmind.Editor
                 Children = new List<Node>()
             };
             
-            _tree.Root.Children.Add(selector);
-
             var compositeView = CreateCompositeView(selector);
             var position = compositeView.GetPosition();
             position.position = _mousePosition;
@@ -443,8 +467,6 @@ namespace Batmind.Editor
                 Children = new List<Node>()
             };
             
-            _tree.Root.Children.Add(selector);
-
             AddElement(CreateCompositeView(selector));
         }
 
@@ -457,8 +479,6 @@ namespace Batmind.Editor
                 Children = new List<Node>()
             };
             
-            _tree.Root.Children.Add(selector);
-
             AddElement(CreateCompositeView(selector));
         }
         
@@ -470,8 +490,6 @@ namespace Batmind.Editor
                 GraphPosition = Vector2.zero,
                 Children = new List<Node>()
             };
-            
-            _tree.Root.Children.Add(sequence);
             
             AddElement(CreateCompositeView(sequence));
         }

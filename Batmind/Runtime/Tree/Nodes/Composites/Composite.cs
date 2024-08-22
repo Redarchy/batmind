@@ -23,5 +23,22 @@ namespace Batmind.Tree.Nodes.Composites
                 child.Reset();
             }
         }
+
+        public override void SetBehaviourContext(BehaviourContext context)
+        {
+            base.SetBehaviourContext(context);
+            
+            foreach (var child in Children)
+            {
+                child.SetBehaviourContext(context);
+            }
+
+        }
+
+        public override void Clear()
+        {
+            base.Clear();
+            Children.Clear();
+        }
     }
 }

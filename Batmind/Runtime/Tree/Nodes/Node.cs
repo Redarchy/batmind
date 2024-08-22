@@ -31,5 +31,10 @@ namespace Batmind.Tree.Nodes
 #endif
         
         public enum Status { Success, Failure, Running }
+
+        public virtual void Clear()
+        {
+            
+        }
     }
 }

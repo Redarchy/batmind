@@ -8,7 +8,7 @@ namespace Batmind.Batmind.Editor.Nodes
     public class RootNodeView : NodeView<Root>
     {
         private readonly Action<Tree.Nodes.Node> _onSelectionChanged;
-        protected override Port.Capacity OutputPortCapacity => Port.Capacity.Multi;
+        protected override Port.Capacity OutputPortCapacity => Port.Capacity.Single;
 
         public RootNodeView(Root root, Action<Tree.Nodes.Node> onSelectionChanged) 
             : base(root, onSelectionChanged)

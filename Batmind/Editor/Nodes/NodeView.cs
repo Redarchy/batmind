@@ -22,7 +22,11 @@ namespace Batmind.Editor
         public Tree.Nodes.Node ImplicitTreeNode { get; protected set; }
         public List<Edge> Edges => _edges;
         protected Action<Tree.Nodes.Node> OnSelectionChanged { get; set; }
-
+        public override bool expanded
+        {
+            get => true;
+            set { /* Do nothing to prevent changing this value */ }
+        }
 
         protected void SetBaseView(Tree.Nodes.Node treeNode)
         {
@@ -59,6 +63,12 @@ namespace Batmind.Editor
             cap.style.paddingTop = 8f;
             cap.style.width = 10f;
             
+            var connector = inputPort.Q("connector");
+            connector.style.alignSelf = Align.Center;
+
+            var portTypeName = inputPort.Q("type");
+            portTypeName.style.width = 0;
+
             inputContainer.Add(inputPort);
 
             _inputPort = inputPort;
@@ -70,6 +80,9 @@ namespace Batmind.Editor
             outputPort.capabilities &= ~Capabilities.Deletable;
             outputPort.portName = Constants.OutputPortLabel;
             outputPort.style.flexDirection = FlexDirection.Column;
+            outputPort.style.alignSelf = Align.Stretch;
+            outputPort.style.alignContent = Align.Stretch;
+            outputPort.style.alignItems = Align.Stretch;
             outputPort.style.height = 5f;
             outputPort.style.color = Color.cyan;
 
@@ -77,6 +90,12 @@ namespace Batmind.Editor
             cap.style.paddingTop = 7f;
             cap.style.width = 10f;
 
+            var connector = outputPort.Q("connector");
+            connector.style.alignSelf = Align.Center;
+
+            var portTypeName = outputPort.Q("type");
+            portTypeName.style.width = 0;
+            
             outputContainer.Add(outputPort);
             
             _outputPort = outputPort;
@@ -106,6 +125,7 @@ namespace Batmind.Editor
         private void SetPortStyle()
         {
             var nodeBorderVisualElement = this.Q("node-border");
+            nodeBorderVisualElement.style.overflow = Overflow.Visible;
             
             var inputVisualElement = this.Q("input");
             if (inputVisualElement != null)

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.Pool;
 
 namespace Batmind.Tree.Nodes.Composites
 {
@@ -9,12 +10,25 @@ namespace Batmind.Tree.Nodes.Composites
         private List<Node> _sortedChildren;
         private List<Node> SortedChildren => _sortedChildren ??= SortChildren();
         
-        protected virtual List<Node> SortChildren() => Children.OrderByDescending(child => child.Priority).ToList();
+        protected virtual List<Node> SortChildren()
+        {
+            _sortedChildren = ListPool<Node>.Get();
+            _sortedChildren.Clear();
+            _sortedChildren.AddRange(Children.OrderByDescending(child => child.Priority));
+
+            return _sortedChildren;
+        }
         
         public override void Reset()
         {
             base.Reset();
-            _sortedChildren = null;
+            
+            if (_sortedChildren != null)
+            {
+                _sortedChildren.Clear();
+                ListPool<Node>.Release(_sortedChildren);
+                _sortedChildren = null;
+            }
         }
         
         public override Status Process()

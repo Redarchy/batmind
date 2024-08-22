@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
-using Batmind.Board;
+﻿using Batmind.Board;
 using Batmind.Tree.Nodes.Composites;
 using UnityEngine;
 
@@ -17,79 +15,16 @@ namespace Batmind.Tree.Nodes
 
         public override void Initialize()
         {
-            SetRuntimeEntryAccessors(Root.Children);
+            Root.SetRuntimeEntryAccessors(Blackboard);
         }
         
         public override void SetBehaviourContext(BehaviourContext context)
         {
             base.SetBehaviourContext(context);
             Validator.SetBehaviourContext(context);
-            SetBehaviourContext(context, Root.Children);
-        }
-
-        private void SetBehaviourContext(BehaviourContext context, List<Node> nodes)
-        {
-            foreach (var node in nodes)
-            {
-                if (node is Composite composite)
-                {
-                    SetBehaviourContext(context, composite.Children);
-                    continue;
-                }
-
-                node.SetBehaviourContext(context);
-            }
-        }
-
-        private void SetRuntimeEntryAccessors(List<Node> nodes)
-        {
-            const string entryKeyHashName = "EntryKeyHash";
-            const string runtimeEntryName = "RuntimeEntry";
-            
-            var entryAccessorType = typeof(EntryAccessor<>);
-
-            foreach (var node in nodes)
-            {
-                if (node is Composite composite)
-                {
-                    SetRuntimeEntryAccessors(composite.Children);
-                    continue;
-                }
-                
-                var childType = node.GetType();
-                var fields = childType.GetFields(BindingFlags.Public | BindingFlags.Instance);
-
-                foreach (var fieldInfo in fields)
-                {
-                    if (!fieldInfo.FieldType.IsGenericType || fieldInfo.FieldType.GetGenericTypeDefinition() != entryAccessorType)
-                    {
-                        continue;
-                    }
-
-                    var entryAccessor = fieldInfo.GetValue(node);
-                    var entryAccessorExplicitType = entryAccessor.GetType();
-                    var entryKeyHashField = entryAccessorExplicitType.GetField(entryKeyHashName);
-                    var entryKeyHash = (int) entryKeyHashField.GetValue(entryAccessor);
-                    
-                    if (!Blackboard.ContainsKeyWithHash(entryKeyHash, out var key))
-                    {
-                        continue;
-                    }
-
-                    if (!Blackboard.TryGetEntry(key, out var entry))
-                    {
-                        continue;
-                    }
-                    
-                    var runtimeEntryField = entryAccessorExplicitType.GetField(runtimeEntryName);
-                    runtimeEntryField.SetValue(entryAccessor, entry);
-                }
-
-            }
+            Root.SetBehaviourContext(context);
         }
         
-        public void AddChild(Node child) => Root.Children.Add(child);
-
         public override Status Process()
         {
             // var status = Children[_currentChild].Process();
@@ -123,10 +58,7 @@ namespace Batmind.Tree.Nodes
 
         public override void Reset()
         {
-            foreach (var child in Root.Children)
-            {
-                child.Reset();
-            }
+            Root.Reset();
         }
 
 #if UNITY_EDITOR
@@ -135,5 +67,11 @@ namespace Batmind.Tree.Nodes
             Blackboard.OnValidate();
         }
 #endif
+        public void Clear()
+        {
+            Blackboard.ClearEntries();
+            Root.Clear();
+            Validator.Clear();
+        }
     }
 }
