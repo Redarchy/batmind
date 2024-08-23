@@ -7,6 +7,7 @@ namespace Batmind.Editor.Nodes
     public class SequenceNodeView : NodeView<Sequence>
     {
         protected override Port.Capacity OutputPortCapacity => Port.Capacity.Multi;
+        protected override string DefaultDescription => "Until One Fails";
 
         
         public SequenceNodeView(Sequence sequence, Action<Tree.Nodes.Node> onSelectedNodeChanged) 

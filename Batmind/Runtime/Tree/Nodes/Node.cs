@@ -27,7 +27,7 @@ namespace Batmind.Tree.Nodes
         
 #if UNITY_EDITOR
         [SerializeField, HideInInspector] public Vector2 GraphPosition;
-
+        [SerializeField] public string Description = "";
 #endif
         
         public enum Status { Success, Failure, Running }

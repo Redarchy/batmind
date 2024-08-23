@@ -2,6 +2,7 @@
 using Batmind.Editor;
 using Batmind.Tree.Nodes.Composites;
 using UnityEditor.Experimental.GraphView;
+using UnityEngine;
 
 namespace Batmind.Batmind.Editor.Nodes
 {
@@ -9,6 +10,9 @@ namespace Batmind.Batmind.Editor.Nodes
     {
         private readonly Action<Tree.Nodes.Node> _onSelectionChanged;
         protected override Port.Capacity OutputPortCapacity => Port.Capacity.Single;
+        protected override Color BackgroundColor => new(160 / 255f, 32 / 255f, 240 / 255f, 1);
+        protected override string DefaultDescription => "of all evil...";
+
 
         public RootNodeView(Root root, Action<Tree.Nodes.Node> onSelectionChanged) 
             : base(root, onSelectionChanged)

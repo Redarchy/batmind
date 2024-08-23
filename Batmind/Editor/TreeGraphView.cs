@@ -33,7 +33,7 @@ namespace Batmind.Editor
             
             this.AddManipulator(new ContentDragger());
             var contentZoomer = new ContentZoomer();
-            contentZoomer.maxScale *= 2f;
+            contentZoomer.maxScale *= 5f;
             
             this.AddManipulator(contentZoomer);
             this.AddManipulator(new SelectionDragger());
@@ -193,7 +193,7 @@ namespace Batmind.Editor
             {
                 selectorNodeView.TreeNode.Children.Clear();
                 
-                var connectedNodes = outputPort.connections.ToList();
+                var connectedNodes = outputPort.connections.OrderBy(c => c.input.node.GetPosition().x).ToList();
                 var connectedNodesCount = connectedNodes.Count;
                 
                 for (var i = 0; i < connectedNodesCount; i++)
@@ -351,7 +351,7 @@ namespace Batmind.Editor
         {
             var buttonToolbar = new Toolbar();
 
-            AddToolbarButton(buttonToolbar, "Clear Graph", () =>
+            AddToolbarButton(buttonToolbar, "Clear Graph", Color.red, () =>
             {
                 var nodeViewsToRemove = graphElements
                     .Where(view => view is NodeView && 
@@ -367,18 +367,18 @@ namespace Batmind.Editor
                 _tree.Validator.Clear();
             });
             
-            AddToolbarButton(buttonToolbar, "Clear Blackboard", () =>
+            AddToolbarButton(buttonToolbar, "Clear Blackboard", Color.red, () =>
             {
                 _tree.Blackboard.ClearEntries();
             });
             
-            AddToolbarButton(buttonToolbar, "Save Graph", () =>
+            AddToolbarButton(buttonToolbar, "Save Graph", Color.green, () =>
             {
                 SaveBehaviourTree();
                 _onTreeSaved?.Invoke(_tree);
             });
             
-            AddToolbarButton(buttonToolbar, "Save as Asset", () =>
+            AddToolbarButton(buttonToolbar, "Save as Asset", Color.blue, () =>
             {
                 SaveAsAssetWindow.OnSaved += savedFileName =>
                 {
@@ -390,13 +390,15 @@ namespace Batmind.Editor
             
             Add(buttonToolbar);
             
-            void AddToolbarButton(Toolbar toolbar, string buttonName, Action callback)
+            void AddToolbarButton(Toolbar toolbar, string buttonName, Color color, Action callback)
             {
-                var addNodeButton = new Button(callback)
+                var button = new Button(callback)
                 {
                     text = buttonName
                 };
-                toolbar.Add(addNodeButton);
+                color.a = 0.4f;
+                button.style.backgroundColor = color;
+                toolbar.Add(button);
             }
 
         }

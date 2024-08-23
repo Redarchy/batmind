@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -19,6 +20,8 @@ namespace Batmind.Editor
         public Port OutputPort => _outputPort;
         public abstract string Title { get; }
         protected virtual Port.Capacity OutputPortCapacity => Port.Capacity.Single;
+        protected virtual Color BackgroundColor => Color.yellow;
+        protected virtual string DefaultDescription => "";
         public Tree.Nodes.Node ImplicitTreeNode { get; protected set; }
         public List<Edge> Edges => _edges;
         protected Action<Tree.Nodes.Node> OnSelectionChanged { get; set; }
@@ -34,6 +37,7 @@ namespace Batmind.Editor
             
             AddInputPort();
             AddOutputPort();
+            SetTitleVisual();
             
             RefreshExpandedState();
             RefreshPorts();
@@ -49,6 +53,36 @@ namespace Batmind.Editor
         {
             title = Title;
         }
+
+        protected virtual void SetTitleVisual()
+        {
+            var titleParent = this.Q("title");
+            titleParent.style.flexDirection = FlexDirection.Column;
+            titleParent.style.paddingLeft = 6f;
+            titleParent.style.paddingRight = 6f;
+            titleParent.style.paddingTop = 6f;
+            titleParent.style.paddingBottom = 6f;
+            titleParent.style.fontSize = 0f;
+
+            var titleLabel = this.Q("title-label");
+            titleLabel.style.marginLeft = 0;
+            titleLabel.style.marginRight = 0;
+            titleLabel.style.marginTop = 0;
+            titleLabel.style.marginBottom = 0;
+            titleLabel.style.unityTextAlign = TextAnchor.UpperLeft;
+            titleLabel.style.color = Color.white;
+            
+            var titleButtonContainer = titleParent.Q("title-button-container");
+            titleParent.Remove(titleButtonContainer);
+
+            var description = string.IsNullOrEmpty(ImplicitTreeNode.Description) ? DefaultDescription : ImplicitTreeNode.Description;
+            var descriptionLabel = new Label(description);
+            EditorApplication.update += () => descriptionLabel.text = string.IsNullOrEmpty(ImplicitTreeNode.Description) ? DefaultDescription : ImplicitTreeNode.Description;
+            descriptionLabel.style.unityTextAlign = TextAnchor.LowerLeft;
+            descriptionLabel.style.fontSize = 10f;
+            descriptionLabel.focusable = true;
+            titleParent.Add(descriptionLabel);
+        }
         
         protected virtual void AddInputPort()
         {
@@ -58,6 +92,7 @@ namespace Batmind.Editor
             inputPort.style.flexDirection = FlexDirection.Column;
             inputPort.style.height = 5f;
             inputPort.style.color = Color.cyan;
+            inputPort.portColor = Color.white;
 
             var cap = inputPort.Q("cap");
             cap.style.paddingTop = 8f;
@@ -85,6 +120,7 @@ namespace Batmind.Editor
             outputPort.style.alignItems = Align.Stretch;
             outputPort.style.height = 5f;
             outputPort.style.color = Color.cyan;
+            outputPort.portColor = Color.white;
 
             var cap = outputPort.Q("cap");
             cap.style.paddingTop = 7f;
@@ -126,6 +162,7 @@ namespace Batmind.Editor
         {
             var nodeBorderVisualElement = this.Q("node-border");
             nodeBorderVisualElement.style.overflow = Overflow.Visible;
+            nodeBorderVisualElement.style.backgroundColor = BackgroundColor;
             
             var inputVisualElement = this.Q("input");
             if (inputVisualElement != null)
