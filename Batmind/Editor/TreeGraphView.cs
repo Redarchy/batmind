@@ -350,6 +350,7 @@ namespace Batmind.Editor
         private void CreateToolbar()
         {
             var buttonToolbar = new Toolbar();
+            buttonToolbar.Add(new Label("Toolbar"));
 
             AddToolbarButton(buttonToolbar, "Clear Graph", Color.red, () =>
             {

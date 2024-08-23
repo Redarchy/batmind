@@ -24,7 +24,23 @@ namespace Batmind.Editor.Nodes
 
         protected override void SetStyle()
         {
+            this.capabilities &= Capabilities.Deletable;
+            this.capabilities &= Capabilities.Collapsible;
+            this.capabilities &= Capabilities.Resizable;
+            this.capabilities &= Capabilities.Copiable;
+            this.capabilities |= Capabilities.Movable;
+            this.capabilities |= Capabilities.Selectable;
+
+            var rect = GetPosition();
+            var position = rect.position;
             
+            if (position.y == 0)
+            {
+                position.y -= 200;
+            }
+
+            rect.position = position;
+            SetPosition(rect);
         }
     }
 }
