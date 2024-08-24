@@ -29,12 +29,12 @@ namespace Batmind.Editor
         {
             _tree = tree;
 
-            SetupZoom(ContentZoomer.DefaultMinScale, ContentZoomer.DefaultMaxScale);
-            
+            SetGridBackground();
+
             this.AddManipulator(new ContentDragger());
             var contentZoomer = new ContentZoomer();
-            contentZoomer.maxScale *= 5f;
-            
+            contentZoomer.maxScale *= 3f;
+
             this.AddManipulator(contentZoomer);
             this.AddManipulator(new SelectionDragger());
             this.AddManipulator(new RectangleSelector());
