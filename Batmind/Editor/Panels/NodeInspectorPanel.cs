@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Batmind.Tree.Nodes;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -10,7 +13,8 @@ namespace Batmind.Editor.Panels
     {
         private Node _selectedNode;
         private VisualElement _container;
-        
+        private SerializedObject _serializedObject;
+
         public NodeInspectorPanel()
         {
             SetStyle();
@@ -86,14 +90,25 @@ namespace Batmind.Editor.Panels
             var holder = ScriptableObject.CreateInstance<SerializedObjectHolder>();
             holder.SerializedNode = _selectedNode;
             
-            var serializedObject = new SerializedObject(holder);
+            _serializedObject = new SerializedObject(holder);
 
-            var property = serializedObject.FindProperty(holder.NodeName);
+            var property = _serializedObject.FindProperty(holder.NodeName);
             
             while (property.NextVisible(true))
             {
+
+                // Since PropertyFields does not cover SerializeReferenced fields
+                if (property.propertyType == SerializedPropertyType.ManagedReference)
+                { 
+                    // Create a dropdown to let the user select the type
+                    var typeDropdown = CreateTypeDropdown(property.Copy());
+                    scrollBar.Add(typeDropdown);
+
+                    continue;
+                }
+
                 var propertyField = new PropertyField(property);
-                propertyField.Bind(serializedObject);
+                propertyField.Bind(_serializedObject);
                 scrollBar.Add(propertyField);
             }
             
@@ -101,7 +116,50 @@ namespace Batmind.Editor.Panels
             
             Add(_container);
         }
+        
+        private VisualElement CreateTypeDropdown(SerializedProperty property)
+        {
+            var typeNameParts = property.managedReferenceFieldTypename.Split(" ");
+            var typeName = typeNameParts[1] + ", " + typeNameParts[0];
+            var baseType = Type.GetType(typeName);
+            
+            var (typeNames, asmQualifiedNames) = GetAvailableTypes(baseType);
 
+            if (property.managedReferenceValue == null && asmQualifiedNames.Count > 0)
+            {
+                var selectedType = Type.GetType(asmQualifiedNames[0]);
+                property.serializedObject.Update();
+                property.managedReferenceValue = Activator.CreateInstance(selectedType);
+                var isDifferent = property.serializedObject.CopyFromSerializedPropertyIfDifferent(property);
+                property.serializedObject.ApplyModifiedProperties();
+            }
+
+            var currentType = Type.GetTypeFromHandle(Type.GetTypeHandle(property.boxedValue));
+            var currentTypeIndex = typeNames.IndexOf(currentType.Name);
+            
+            var dropdown = new PopupField<string>($"{property.displayName}", typeNames, currentTypeIndex);
+            
+            dropdown.RegisterValueChangedCallback(evt =>
+            {
+                var index = typeNames.IndexOf(evt.newValue);
+                var asmQualifiedName = asmQualifiedNames[index];
+                var selectedType = Type.GetType(asmQualifiedName);
+                if (selectedType != null)
+                {
+                    // Assign the new type to the SerializeReference field
+                    property.serializedObject.Update();
+                    property.managedReferenceValue = Activator.CreateInstance(selectedType);
+                    var isDifferent = property.serializedObject.CopyFromSerializedPropertyIfDifferent(property);
+                    property.serializedObject.ApplyModifiedProperties();
+                    
+                    CreateGUI();
+                }
+            });
+
+            
+            return dropdown;
+        }
+        
         private VisualElement GetScrollBar()
         {
             var scrollView = new ScrollView();
@@ -116,6 +174,22 @@ namespace Batmind.Editor.Panels
             typeLabel.style.color = Color.yellow;
             
             return typeLabel;
+        }
+
+        private (List<string>, List<string>) GetAvailableTypes(Type baseType)
+        {
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var typeNames = new List<string>();
+            var asmQualifiedNames = new List<string>();
+            
+            foreach (var assembly in assemblies)
+            {
+                typeNames.AddRange(assembly.GetTypes().Where(t => t != baseType && baseType.IsAssignableFrom(t)).Select(t => t.Name));
+                asmQualifiedNames.AddRange(assembly.GetTypes().Where(t => t != baseType && baseType.IsAssignableFrom(t)).Select(t => t.AssemblyQualifiedName));
+                
+            }
+            
+            return (typeNames, asmQualifiedNames);
         }
         
         private class SerializedObjectHolder : ScriptableObject

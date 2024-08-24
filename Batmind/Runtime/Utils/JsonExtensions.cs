@@ -50,14 +50,25 @@ namespace Batmind.Utils
                 .Where(f => f.GetCustomAttribute<SerializeField>() != null)
                 .Select(f => base.CreateProperty(f, memberSerialization))
                 .ToList();
+ 
+            var serializeReferenceProperties = type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
+                .Where(f => f.GetCustomAttribute<SerializeReference>() != null)
+                .Select(f => base.CreateProperty(f, memberSerialization))
+                .ToList();
 
             foreach (var property in serializeFieldProperties)
             {
                 property.Writable = true;
                 property.Readable = true;
             }
-
             properties.AddRange(serializeFieldProperties);
+
+            foreach (var property in serializeReferenceProperties)
+            {
+                property.Writable = true;
+                property.Readable = true;
+            }
+            properties.AddRange(serializeReferenceProperties);
             
             
             return properties;

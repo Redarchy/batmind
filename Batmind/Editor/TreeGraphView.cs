@@ -189,7 +189,7 @@ namespace Batmind.Editor
             {
                 sequenceNodeView.TreeNode.Children.Clear();
                 
-                var connectedNodes = outputPort.connections.ToList();
+                var connectedNodes = outputPort.connections.OrderByDescending(c => c.input.node.GetPosition().y).ToList();
                 var connectedNodesCount = connectedNodes.Count;
                 
                 for (var i = 0; i < connectedNodesCount; i++)

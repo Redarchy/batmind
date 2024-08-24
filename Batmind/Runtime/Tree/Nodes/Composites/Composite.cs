@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#define BATMIND_HIDE_COMPOSITE_CHILDREN
+
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Batmind.Tree.Nodes.Composites
@@ -6,7 +8,10 @@ namespace Batmind.Tree.Nodes.Composites
     [System.Serializable]
     public abstract class Composite : Node
     {
-        [SerializeReference] [HideInInspector] public List<Node> Children;
+        #if BATMIND_HIDE_COMPOSITE_CHILDREN
+        [HideInInspector]
+        #endif
+        [SerializeReference] public List<Node> Children;
         
         protected int _currentChild = 0;
         
