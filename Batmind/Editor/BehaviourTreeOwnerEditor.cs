@@ -105,7 +105,7 @@ namespace Batmind.Editor
             
             var openEditorButton = new Button(() =>
             {
-                var instance = EditorWindow.GetWindow<GraphWindow>();
+                var instance = EditorWindow.GetWindow<GraphWindow>($"{target.name} Graph");
                 var treeOwner = (BehaviourTreeOwner) target;
                 
                 var jsonCopy = treeOwner.Tree.ToJson();
