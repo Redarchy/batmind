@@ -9,16 +9,17 @@ namespace Batmind.Editor.Nodes
     {
         protected override Port.Capacity OutputPortCapacity => Port.Capacity.Multi;
         protected override Color BackgroundColor => new(239 / 255f, 124 / 255f, 142 / 255f, 1);
-        protected override string DefaultDescription => "Until One Succeeds, L2R";
+        protected override string DefaultDescription => "Until One Succeeds";
 
         public SelectorNodeView(Selector selector, Action<Tree.Nodes.Node> onSelectionChanged) 
             : base(selector, onSelectionChanged)
         {
+            (ImplicitTreeNode as Composite)!._EditorOrderMode = Composite.CompositeOrderMode.LeftToRight;
         }
 
         protected override void SetStyle()
         {
-            
+            AddOrderModeLabel();
         }
     }
 }

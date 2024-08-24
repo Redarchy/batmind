@@ -188,8 +188,7 @@ namespace Batmind.Editor
             else if (nodeView is SequenceNodeView sequenceNodeView)
             {
                 sequenceNodeView.TreeNode.Children.Clear();
-                
-                var connectedNodes = outputPort.connections.OrderByDescending(c => c.input.node.GetPosition().y).ToList();
+                var connectedNodes = sequenceNodeView.GetOrderedEdges();;
                 var connectedNodesCount = connectedNodes.Count;
                 
                 for (var i = 0; i < connectedNodesCount; i++)
@@ -208,7 +207,7 @@ namespace Batmind.Editor
             {
                 selectorNodeView.TreeNode.Children.Clear();
                 
-                var connectedNodes = outputPort.connections.OrderBy(c => c.input.node.GetPosition().x).ToList();
+                var connectedNodes = selectorNodeView.GetOrderedEdges();;
                 var connectedNodesCount = connectedNodes.Count;
                 
                 for (var i = 0; i < connectedNodesCount; i++)
@@ -320,12 +319,6 @@ namespace Batmind.Editor
                     break;
                 case Validator validator:
                     compositeNodeView = new ValidatorNodeView(validator, OnSelectedNodeChanged);
-                    break;
-                case PrioritySelector prioritySelector:
-                    compositeNodeView = new PrioritySelectorNodeView(prioritySelector, OnSelectedNodeChanged);
-                    break;
-                case RandomOrderSelector randomOrderSelector:
-                    compositeNodeView = new RandomOrderSelectorNodeView(randomOrderSelector, OnSelectedNodeChanged);
                     break;
                 case Sequence sequence:
                     compositeNodeView = new SequenceNodeView(sequence, OnSelectedNodeChanged);
@@ -474,30 +467,6 @@ namespace Batmind.Editor
             AddElement(compositeView);
             
             compositeView.SetPosition(position);
-        }
-
-        public void AddNewPrioritySelector()
-        {
-            var selector = new PrioritySelector
-            {
-                Priority = 0,
-                GraphPosition = Vector2.zero,
-                Children = new List<Node>()
-            };
-            
-            AddElement(CreateCompositeView(selector));
-        }
-
-        public void AddNewRandomOrderSelector()
-        {
-            var selector = new RandomOrderSelector
-            {
-                Priority = 0,
-                GraphPosition = Vector2.zero,
-                Children = new List<Node>()
-            };
-            
-            AddElement(CreateCompositeView(selector));
         }
         
         public void AddNewSequence()

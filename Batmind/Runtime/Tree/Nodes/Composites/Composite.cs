@@ -45,5 +45,18 @@ namespace Batmind.Tree.Nodes.Composites
             base.Clear();
             Children.Clear();
         }
+        
+        #if UNITY_EDITOR
+
+        [SerializeField] public CompositeOrderMode _EditorOrderMode;
+        
+        public enum CompositeOrderMode
+        {
+            Priority,
+            LeftToRight,
+            TopToBottom,
+        }
+        
+        #endif
     }
 }

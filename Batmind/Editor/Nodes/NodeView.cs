@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Batmind.Tree.Nodes.Composites;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Utilities.Extentions;
 using Edge = UnityEditor.Experimental.GraphView.Edge;
 
 namespace Batmind.Editor
@@ -82,6 +82,45 @@ namespace Batmind.Editor
             descriptionLabel.style.fontSize = 10f;
             descriptionLabel.focusable = true;
             titleParent.Add(descriptionLabel);
+        }
+
+        protected virtual void AddOrderModeLabel()
+        {
+            if (ImplicitTreeNode is not Composite composite)
+            {
+                return;
+            }
+            
+            var titleParent = this.Q("title").parent;
+            var orderModeLabel = new Label(GetOrderModeText());
+            EditorApplication.update += () => orderModeLabel.text = GetOrderModeText();
+            orderModeLabel.style.unityTextAlign = TextAnchor.LowerLeft;
+            orderModeLabel.style.fontSize = 8f;
+            orderModeLabel.style.color = Color.black;
+            orderModeLabel.style.unityTextOutlineColor = Color.black;
+            orderModeLabel.style.unityTextOutlineWidth = 0.7f;
+            orderModeLabel.focusable = false;
+            titleParent.Add(orderModeLabel);
+
+            var currentPadding = titleParent.style.paddingBottom.value.value;
+            currentPadding += orderModeLabel.style.height.value.value;
+            titleParent.style.paddingBottom = currentPadding;
+
+            string GetOrderModeText()
+            {
+                switch (composite._EditorOrderMode)
+                {
+                    case Composite.CompositeOrderMode.Priority:
+                        return "Priority";
+                        
+                    case Composite.CompositeOrderMode.LeftToRight:
+                        return "L2R";
+                        
+                    case Composite.CompositeOrderMode.TopToBottom:
+                    default:
+                        return "T2B";
+                }
+            }
         }
         
         protected virtual void AddInputPort()

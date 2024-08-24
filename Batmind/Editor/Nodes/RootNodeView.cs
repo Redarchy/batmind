@@ -12,6 +12,7 @@ namespace Batmind.Batmind.Editor.Nodes
         protected override Port.Capacity OutputPortCapacity => Port.Capacity.Single;
         protected override Color BackgroundColor => new(160 / 255f, 32 / 255f, 240 / 255f, 1);
         protected override string DefaultDescription => "of all evil...";
+        public override string Title => "The Root";
 
 
         public RootNodeView(Root root, Action<Tree.Nodes.Node> onSelectionChanged) 
@@ -32,5 +33,6 @@ namespace Batmind.Batmind.Editor.Nodes
             this.capabilities &= Capabilities.Resizable;
             this.capabilities &= Capabilities.Copiable;
         }
+
     }
 }

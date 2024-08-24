@@ -10,12 +10,11 @@ namespace Batmind.Editor
             data.menu.ClearItems();
             
             
-            data.menu.AppendAction("Composites", null, DropdownMenuAction.Status.Disabled);
+            data.menu.AppendAction("Select a Node To Add", null, DropdownMenuAction.Status.Disabled);
             data.menu.AppendSeparator();
+            
             data.menu.AppendAction("Sequence", (x) => treeGraphView.AddNewSequence());
             data.menu.AppendAction("Selector", (x) => treeGraphView.AddNewSelector());
-            data.menu.AppendAction("Priority Selector", (x) => treeGraphView.AddNewPrioritySelector());
-            data.menu.AppendAction("Random Order Selector", (x) => treeGraphView.AddNewRandomOrderSelector());
             
             data.menu.AppendSeparator();
             data.menu.AppendAction("Action", (x) => treeGraphView.AddNewAction());
