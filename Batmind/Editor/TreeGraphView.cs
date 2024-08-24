@@ -8,6 +8,7 @@ using Batmind.Tree.Nodes.Actions;
 using Batmind.Tree.Nodes.Composites;
 using Batmind.Tree.Nodes.Conditions;
 using Batmind.Tree.Nodes.Decorators;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -46,10 +47,24 @@ namespace Batmind.Editor
             CreateToolbar();
             CreateGraph();
             
+        }
+
+        private void SetGridBackground()
+        {
             var background = new GridBackground();
             Insert(0, background);
             background.StretchToParentSize();
             background.SendToBack();
+
+            var assets = AssetDatabase.FindAssets("BatmindBackgroundStyleSheet");
+            if (assets.Length <= 0)
+            {
+                Debug.Log("[Batmind] No style sheet found for GridBackground.");
+                return;
+            }
+            var assetPath = AssetDatabase.GUIDToAssetPath(assets[0]);
+            var styleSheet = AssetDatabase.LoadAssetAtPath(assetPath, typeof(StyleSheet)) as StyleSheet;
+            styleSheets.Add(styleSheet);
         }
 
         private void OnMouseUp(MouseUpEvent mouseUpEvent)
