@@ -4,6 +4,7 @@ using System.Linq;
 using Batmind.Tree.Nodes;
 using Batmind.Tree.Nodes.Composites;
 using Batmind.Utils;
+using Unity.EditorCoroutines.Editor;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -101,7 +102,7 @@ namespace Batmind.Editor.Panels
                 orderChildrenButton.text = "Order Children";
                 orderChildrenButton.clicked += () =>
                 {
-                    _selectedNodeView.OrderChildren();
+                    EditorCoroutineUtility.StartCoroutine(_selectedNodeView.OrderChildren(), this);
                 };
                 
                 headerContainer.Add(orderChildrenButton);
