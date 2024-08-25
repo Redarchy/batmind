@@ -8,7 +8,7 @@ namespace Batmind.Editor.Nodes
     {
         protected override Port.Capacity OutputPortCapacity => Port.Capacity.Single;
 
-        public InverterNodeView(Inverter inverter, Action<Tree.Nodes.Node> onSelectionChanged) 
+        public InverterNodeView(Inverter inverter, Action<NodeView> onSelectionChanged) 
             : base(inverter, onSelectionChanged)
         {
             

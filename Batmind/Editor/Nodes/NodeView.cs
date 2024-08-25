@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Batmind.Editor.Nodes;
 using Batmind.Tree.Nodes.Composites;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
@@ -24,7 +25,7 @@ namespace Batmind.Editor
         protected virtual string DefaultDescription => "";
         public Tree.Nodes.Node ImplicitTreeNode { get; protected set; }
         public List<Edge> Edges => _edges;
-        protected Action<Tree.Nodes.Node> OnSelectionChanged { get; set; }
+        protected Action<NodeView> OnSelectionChanged { get; set; }
         public override bool expanded
         {
             get => true;
@@ -230,6 +231,81 @@ namespace Batmind.Editor
                 nodeBorderVisualElement.Add(outputVisualElement);
             }
         }
+
+        public virtual void OrderChildren()
+        {
+            var ownRect = GetPosition();
+            var center = ownRect.center;
+            var position = ownRect.position;
+            var ownBottomY = position.y + ownRect.height;
+            
+            if (ImplicitTreeNode is not Composite composite)
+            {
+                if (ImplicitTreeNode is Root && OutputPort.connections != null && OutputPort.connections.Any())
+                {
+                    var childView = OutputPort.connections.Select(c => c.input.node as NodeView).FirstOrDefault();
+                    if (childView != null && childView.ImplicitTreeNode is Composite)
+                    {
+                        var rect = childView.GetPosition();
+                        rect.x = center.x - rect.width / 2f;
+                        rect.y = ownBottomY + 40f;
+                        childView.SetPosition(rect);
+
+                        childView.OrderChildren();
+                    }
+                }
+                
+                return;
+            }
+
+            var connectedViews = this.GetOrderedEdges().Select(e => e.input.node as NodeView).ToList();
+
+            if (connectedViews.Count <= 0)
+            {
+                return;
+            }
+            
+            switch (composite._EditorOrderMode)
+            {
+                case Composite.CompositeOrderMode.Priority:
+                    break;
+                
+                case Composite.CompositeOrderMode.LeftToRight:
+                    
+                    foreach (var connectedView in connectedViews)
+                    {
+                        var rect = connectedView.GetPosition();
+                        rect.y = ownBottomY + 50f;
+                        connectedView.SetPosition(rect);
+                    }
+
+                    break;
+                
+                case Composite.CompositeOrderMode.TopToBottom:
+
+                    var previousY = ownBottomY + 25f;
+                    
+                    foreach (var connectedView in connectedViews)
+                    {
+                        var rect = connectedView.GetPosition();
+                        rect.x = center.x - rect.width / 2f;
+                        rect.y = previousY;
+                        connectedView.SetPosition(rect);
+                        previousY += rect.height;
+                        previousY += 25f;
+                    }
+                    
+                    break;
+                
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            foreach (var connectedView in connectedViews)
+            {
+                connectedView.OrderChildren();
+            }
+        }
     }
     
     public class NodeView<TTreeNode> : NodeView
@@ -239,7 +315,7 @@ namespace Batmind.Editor
         
         public TTreeNode TreeNode { get; private set; }
 
-        public NodeView(Tree.Nodes.Node treeNode, Action<Tree.Nodes.Node> onSelectionChanged)
+        public NodeView(Tree.Nodes.Node treeNode, Action<NodeView> onSelectionChanged)
         {
             OnSelectionChanged = onSelectionChanged;
 
@@ -263,7 +339,7 @@ namespace Batmind.Editor
         {
             base.OnSelected();
             
-            OnSelectionChanged?.Invoke(TreeNode);
+            OnSelectionChanged?.Invoke(this);
         }
     }
 

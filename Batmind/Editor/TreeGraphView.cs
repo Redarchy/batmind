@@ -8,6 +8,7 @@ using Batmind.Tree.Nodes.Actions;
 using Batmind.Tree.Nodes.Composites;
 using Batmind.Tree.Nodes.Conditions;
 using Batmind.Tree.Nodes.Decorators;
+using Batmind.Utils;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
@@ -20,7 +21,7 @@ namespace Batmind.Editor
     public class TreeGraphView : GraphView
     {
         private BehaviourTree _tree;
-        private Action<Node> _onSelectionChanged;
+        private Action<NodeView> _onSelectionChanged;
         private Action _onTreeCleared;
         private Action<BehaviourTree> _onTreeSaved;
         private Action<BehaviourTree, string> _onTreeSavedAsAsset;
@@ -74,7 +75,7 @@ namespace Batmind.Editor
         }
 
         public void SetCallbacks(Action<BehaviourTree> onTreeSaved, Action<BehaviourTree, string> onTreeSavedAsAsset,
-            Action<Node> onSelectionChanged)
+            Action<NodeView> onSelectionChanged)
         {
             _onTreeSaved = onTreeSaved;
             _onTreeSavedAsAsset = onTreeSavedAsAsset;
@@ -245,7 +246,7 @@ namespace Batmind.Editor
 
         #endregion
 
-        private void OnSelectedNodeChanged(Node node)
+        private void OnSelectedNodeChanged(NodeView node)
         {
             _onSelectionChanged?.Invoke(node);
         }
@@ -379,6 +380,12 @@ namespace Batmind.Editor
             AddToolbarButton(buttonToolbar, "Clear Blackboard", Color.red, () =>
             {
                 _tree.Blackboard.ClearEntries();
+            });
+            
+            AddToolbarButton(buttonToolbar, "Order Nodes", Color.green.WithG(0.5f), () =>
+            {
+                var rootNodeView = this.Q<RootNodeView>();
+                rootNodeView.OrderChildren();
             });
             
             AddToolbarButton(buttonToolbar, "Save Graph", Color.green, () =>

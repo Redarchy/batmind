@@ -28,9 +28,9 @@ namespace Batmind.Editor
             return graphView;
         }
 
-        private void OnSelectionChanged(Node node)
+        private void OnSelectionChanged(NodeView nodeView)
         {
-            _nodeInspectorPanel.OnNodeSelected(node);
+            _nodeInspectorPanel.OnNodeSelected(nodeView);
             _nodeInspectorPanel.visible = true;
         }
 

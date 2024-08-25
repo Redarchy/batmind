@@ -1,5 +1,6 @@
 using System;
 using Batmind.Tree.Nodes.Actions;
+using Batmind.Utils;
 using UnityEngine;
 
 namespace Batmind.Editor.Nodes
@@ -8,9 +9,9 @@ namespace Batmind.Editor.Nodes
     {
         private readonly Action<Tree.Nodes.Node> _onSelectionChanged;
         public Type ExplicitNodeType { get; set; }
-        protected override Color BackgroundColor => new(182 / 255f, 226 / 255f, 211 / 255f, 1);
+        protected override Color BackgroundColor => ColorExtensions.FromInt(182, 226, 211);
 
-        public ActionNodeView(ActionNode actionNode, Action<Tree.Nodes.Node> onSelectionChanged) 
+        public ActionNodeView(ActionNode actionNode, Action<NodeView> onSelectionChanged) 
             : base(actionNode, onSelectionChanged)
         {
             

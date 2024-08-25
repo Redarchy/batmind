@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Batmind.Tree.Nodes;
+using Batmind.Tree.Nodes.Composites;
+using Batmind.Utils;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -12,6 +14,7 @@ namespace Batmind.Editor.Panels
     public class NodeInspectorPanel : VisualElement
     {
         private Node _selectedNode;
+        private NodeView _selectedNodeView;
         private VisualElement _container;
         private SerializedObject _serializedObject;
 
@@ -65,9 +68,10 @@ namespace Batmind.Editor.Panels
             return height;
         }
 
-        public void OnNodeSelected(Node node)
+        public void OnNodeSelected(NodeView nodeView)
         {
-            _selectedNode = node;
+            _selectedNodeView = nodeView;
+            _selectedNode = nodeView.ImplicitTreeNode;
             
             CreateGUI();
         }
@@ -81,10 +85,30 @@ namespace Batmind.Editor.Panels
             {
                 return;
             }
+
+            var headerContainer = new VisualElement();
+            headerContainer.style.flexDirection = FlexDirection.Row;
+            headerContainer.style.justifyContent = Justify.SpaceBetween;
             
             var typeLabel = GetTypeLabel();
-            _container.Add(typeLabel);
+            headerContainer.Add(typeLabel);
+            
+            if (_selectedNode is Composite)
+            {
+                var orderChildrenButton = new Button();
+                orderChildrenButton.style.color = Color.white;
+                orderChildrenButton.style.backgroundColor = Color.green.WithG(0.5f);
+                orderChildrenButton.text = "Order Children";
+                orderChildrenButton.clicked += () =>
+                {
+                    _selectedNodeView.OrderChildren();
+                };
+                
+                headerContainer.Add(orderChildrenButton);
+            }
 
+            _container.Add(headerContainer);
+            
             var scrollBar = GetScrollBar();
             
             var holder = ScriptableObject.CreateInstance<SerializedObjectHolder>();

@@ -23,7 +23,7 @@ namespace Batmind.Editor.Nodes
                     return connections.OrderBy(connection => ((NodeView) connection.input.node).ImplicitTreeNode.Priority).ToList();
                     
                 case Composite.CompositeOrderMode.TopToBottom:
-                    return connections.OrderByDescending(c => c.input.node.GetPosition().y).ToList();                
+                    return connections.OrderBy(c => c.input.node.GetPosition().y).ToList();                
                     
                 case Composite.CompositeOrderMode.LeftToRight:
                 default:

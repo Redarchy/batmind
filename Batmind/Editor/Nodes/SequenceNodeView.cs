@@ -10,7 +10,7 @@ namespace Batmind.Editor.Nodes
         protected override string DefaultDescription => "Until One Fails";
 
         
-        public SequenceNodeView(Sequence sequence, Action<Tree.Nodes.Node> onSelectedNodeChanged) 
+        public SequenceNodeView(Sequence sequence, Action<NodeView> onSelectedNodeChanged) 
             : base(sequence, onSelectedNodeChanged)
         {
             (ImplicitTreeNode as Composite)!._EditorOrderMode = Composite.CompositeOrderMode.TopToBottom;
