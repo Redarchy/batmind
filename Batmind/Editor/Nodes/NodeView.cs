@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Batmind.Editor.Nodes;
 using Batmind.Tree.Nodes.Composites;
+using Unity.EditorCoroutines.Editor;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -232,11 +234,11 @@ namespace Batmind.Editor
             }
         }
 
-        public virtual void OrderChildren()
+        public virtual IEnumerator OrderChildren()
         {
             if (ImplicitTreeNode is not Composite composite)
             {
-                return;
+                yield break;
             }
 
             var ownRect = GetPosition();
@@ -248,7 +250,7 @@ namespace Batmind.Editor
 
             if (connectedViews.Count <= 0)
             {
-                return;
+                yield break;;
             }
             
             switch (composite._EditorOrderMode)
@@ -288,9 +290,12 @@ namespace Batmind.Editor
                     throw new ArgumentOutOfRangeException();
             }
 
+            yield return null;
+            
             foreach (var connectedView in connectedViews)
             {
-                connectedView.OrderChildren();
+                yield return connectedView.OrderChildren();
+                yield return null;
             }
         }
     }

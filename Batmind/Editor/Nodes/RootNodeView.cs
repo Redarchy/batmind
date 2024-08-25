@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
 using Batmind.Editor;
 using Batmind.Tree.Nodes.Composites;
 using Batmind.Utils;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
@@ -36,18 +38,18 @@ namespace Batmind.Batmind.Editor.Nodes
             this.capabilities &= Capabilities.Copiable;
         }
 
-        public override void OrderChildren()
+        public override IEnumerator OrderChildren()
         {
             if (OutputPort.connections == null || !OutputPort.connections.Any())
             {
-                return;
+                yield break;
             }
             
             var childView = OutputPort.connections.Select(c => c.input.node as NodeView).FirstOrDefault();
 
             if (childView == null || childView.ImplicitTreeNode is not Composite)
             {
-                return;
+                yield break;
             }
             
             var ownRect = GetPosition();
@@ -60,7 +62,8 @@ namespace Batmind.Batmind.Editor.Nodes
             rect.y = ownBottomY + 40f;
             childView.SetPosition(rect);
 
-            childView.OrderChildren();
+            yield return null;
+            yield return childView.OrderChildren();
         }
 
     }

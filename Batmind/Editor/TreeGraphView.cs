@@ -9,6 +9,7 @@ using Batmind.Tree.Nodes.Composites;
 using Batmind.Tree.Nodes.Conditions;
 using Batmind.Tree.Nodes.Decorators;
 using Batmind.Utils;
+using Unity.EditorCoroutines.Editor;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
@@ -385,7 +386,7 @@ namespace Batmind.Editor
             AddToolbarButton(buttonToolbar, "Order Nodes", Color.green.WithG(0.5f), () =>
             {
                 var rootNodeView = this.Q<RootNodeView>();
-                rootNodeView.OrderChildren();
+                EditorCoroutineUtility.StartCoroutine(rootNodeView.OrderChildren(), this);
             });
             
             AddToolbarButton(buttonToolbar, "Save Graph", Color.green, () =>
