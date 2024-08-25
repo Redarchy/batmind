@@ -127,11 +127,17 @@ namespace Batmind.Editor
             
             var clearAndSaveButton = new Button(() =>
             {
-                var owner = behaviourTreeOwner;
-                owner.ClearTree();
-                EditorUtility.SetDirty(owner);
-                AssetDatabase.SaveAssets();
-                AssetDatabase.Refresh();
+                var message = "Are you sure ? This process will clear all blackboard and tree data.";
+                var title = "Clear ?";
+                var clear = EditorUtility.DisplayDialog(title, message, "Clear");
+                if (clear)
+                {
+                    var owner = behaviourTreeOwner;
+                    owner.ClearTree();
+                    EditorUtility.SetDirty(owner);
+                    AssetDatabase.SaveAssets();
+                    AssetDatabase.Refresh();
+                }
             });
             clearAndSaveButton.style.backgroundColor = new Color(0.6f, 0.2f, 0.2f, 1f);
             clearAndSaveButton.style.color = new Color(1f, 1f, 1f, 1f);
