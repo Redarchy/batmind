@@ -49,7 +49,7 @@ namespace Batmind.Editor.Panels
             Add(header);
             
             style.height = Length.Percent(50f);
-            style.width = Length.Percent(20f);
+            style.width = 300f;
             style.position = Position.Absolute;
             style.bottom = 0;
             style.left = 0;
