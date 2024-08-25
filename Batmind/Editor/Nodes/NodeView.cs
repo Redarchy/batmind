@@ -234,29 +234,15 @@ namespace Batmind.Editor
 
         public virtual void OrderChildren()
         {
+            if (ImplicitTreeNode is not Composite composite)
+            {
+                return;
+            }
+
             var ownRect = GetPosition();
             var center = ownRect.center;
             var position = ownRect.position;
             var ownBottomY = position.y + ownRect.height;
-            
-            if (ImplicitTreeNode is not Composite composite)
-            {
-                if (ImplicitTreeNode is Root && OutputPort.connections != null && OutputPort.connections.Any())
-                {
-                    var childView = OutputPort.connections.Select(c => c.input.node as NodeView).FirstOrDefault();
-                    if (childView != null && childView.ImplicitTreeNode is Composite)
-                    {
-                        var rect = childView.GetPosition();
-                        rect.x = center.x - rect.width / 2f;
-                        rect.y = ownBottomY + 40f;
-                        childView.SetPosition(rect);
-
-                        childView.OrderChildren();
-                    }
-                }
-                
-                return;
-            }
 
             var connectedViews = this.GetOrderedEdges().Select(e => e.input.node as NodeView).ToList();
 
@@ -291,6 +277,7 @@ namespace Batmind.Editor
                         rect.x = center.x - rect.width / 2f;
                         rect.y = previousY;
                         connectedView.SetPosition(rect);
+                        
                         previousY += rect.height;
                         previousY += 25f;
                     }
