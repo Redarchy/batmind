@@ -107,6 +107,28 @@ namespace Batmind.Editor.Panels
                 
                 headerContainer.Add(orderChildrenButton);
             }
+            
+            var openScriptButton = new Button();
+            openScriptButton.style.color = Color.white;
+            openScriptButton.style.backgroundColor = Color.yellow.WithG(0.5f);
+            openScriptButton.text = "Edit";
+            openScriptButton.clicked += () =>
+            {
+                var nodeType = _selectedNode.GetType();
+                var script = FindScript(nodeType);
+                
+                if (script != null)
+                {
+                    AssetDatabase.OpenAsset(script);
+                    return;
+                }
+
+                Debug.LogError($"Script for {nodeType.Name} not found.");
+
+            };
+                
+            headerContainer.Add(openScriptButton);
+
 
             _container.Add(headerContainer);
             
@@ -140,6 +162,22 @@ namespace Batmind.Editor.Panels
             _container.Add(scrollBar);
             
             Add(_container);
+        }
+        
+        private MonoScript FindScript(Type type)
+        {
+            string[] guids = AssetDatabase.FindAssets($"{type.Name} t:MonoScript");
+            foreach (string guid in guids)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                MonoScript script = AssetDatabase.LoadAssetAtPath<MonoScript>(path);
+                if (script != null && script.GetClass() == type)
+                {
+                    return script;
+                }
+            }
+            
+            return null;
         }
         
         private VisualElement CreateTypeDropdown(SerializedProperty property)
