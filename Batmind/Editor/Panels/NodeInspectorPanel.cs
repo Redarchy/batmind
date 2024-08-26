@@ -109,7 +109,7 @@ namespace Batmind.Editor.Panels
             }
             
             var openScriptButton = new Button();
-            openScriptButton.style.color = Color.white;
+            openScriptButton.style.color = Color.black;
             openScriptButton.style.backgroundColor = Color.yellow.WithG(0.5f);
             openScriptButton.text = "Edit";
             openScriptButton.clicked += () =>
