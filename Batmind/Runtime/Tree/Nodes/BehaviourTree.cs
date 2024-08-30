@@ -15,7 +15,9 @@ namespace Batmind.Tree.Nodes
 
         public override void Initialize()
         {
+            Validator.Initialize();
             Root.SetRuntimeEntryAccessors(Blackboard);
+            Root.Initialize();
         }
         
         public override void SetBehaviourContext(BehaviourContext context)

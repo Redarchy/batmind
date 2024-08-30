@@ -14,7 +14,16 @@ namespace Batmind.Tree.Nodes.Composites
         [SerializeReference] public List<Node> Children;
         
         protected int _currentChild = 0;
-        
+
+        public override void Initialize()
+        {
+            base.Initialize();
+            foreach (var child in Children)
+            {
+                child.Initialize();
+            }
+        }
+
         public void AddChild(Node child) => Children.Add(child);
         
         public override Status Process() => Children[_currentChild].Process();

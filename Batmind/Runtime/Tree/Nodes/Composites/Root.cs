@@ -13,6 +13,7 @@ namespace Batmind.Tree.Nodes.Composites
         public override void Initialize()
         {
             base.Initialize();
+            _Child.Initialize();
         }
 
         public override Status Process()

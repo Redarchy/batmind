@@ -17,7 +17,7 @@ namespace Batmind.Tree
         public bool IsValidating => _Validate;
         public BehaviourContext Context => _context;
 
-        protected virtual void Awake()
+        public virtual void Initialize()
         {
             _Tree.Initialize();
         }
