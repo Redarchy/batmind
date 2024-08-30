@@ -9,6 +9,7 @@ using Batmind.Tree.Nodes.Composites;
 using Batmind.Tree.Nodes.Conditions;
 using Batmind.Tree.Nodes.Decorators;
 using Batmind.Utils;
+using Plugins.Batmind.Batmind.Editor.Nodes;
 using Unity.EditorCoroutines.Editor;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
@@ -95,8 +96,26 @@ namespace Batmind.Editor
         
         private void CreateGraph()
         {
+            graphViewChanged += OnGraphViewChanged;
             CreateValidatorGraph();
             AddElement(CreateView(_tree.Root));
+        }
+
+        private GraphViewChange OnGraphViewChanged(GraphViewChange graphViewChange)
+        {
+            if (graphViewChange.edgesToCreate != null)
+            {
+                foreach (var edge in graphViewChange.edgesToCreate)
+                {
+                    var inputNodeView = edge.input.node as NodeView;
+                    var outputNodeView = edge.output.node as NodeView;
+
+                    inputNodeView.OnInputConnectedTo(outputNodeView);
+                    outputNodeView.OnOutputConnectedTo(inputNodeView);
+                }
+            }
+
+            return graphViewChange;
         }
 
         private void CreateValidatorGraph()
@@ -224,6 +243,28 @@ namespace Batmind.Editor
                     IterateThroughConnections(connectedNodeView);
                 }
             }
+            else if (nodeView is DecoratorNodeView decoratorNodeView)
+            {
+                decoratorNodeView.TreeNode.Clear();
+                var connectedNodes = outputPort.connections.OrderBy(connection =>
+                {
+                    return (connection.input.node as NodeView).ImplicitTreeNode.Priority;
+                }).ToList();
+                
+                var connectedNodesCount = connectedNodes.Count;
+                
+                for (var i = 0; i < connectedNodesCount; i++)
+                {
+                    var connectedNodeView = connectedNodes[i].input.node as NodeView;
+                    if (connectedNodeView == null)
+                    {
+                        continue;
+                    }
+
+                    decoratorNodeView.TreeNode.Child = connectedNodeView.ImplicitTreeNode;
+                    IterateThroughConnections(connectedNodeView);
+                }
+            }
             else if (nodeView is ValidatorNodeView validatorNodeView)
             {
                 validatorNodeView.TreeNode.Children.Clear();
@@ -344,15 +385,33 @@ namespace Batmind.Editor
             return compositeNodeView;
         }
         
-        private NodeView CreateDecoratorView(Node node)
+        private NodeView CreateDecoratorView(DecoratorNode node)
         {
-            switch (node)
+            var decoratorNodeView = new DecoratorNodeView(node, OnSelectedNodeChanged);
+            
+            if (node.Child == null)
             {
-                case Inverter inverter:
-                    return new InverterNodeView(inverter, OnSelectedNodeChanged);
-                default:
-                    throw new Exception("Type of node is not found!");
+                return decoratorNodeView;
             }
+            
+            var childView = CreateView(node.Child);
+            var childNodeView = childView as NodeView;
+            AddElement(childView);
+            
+            var edge = new Edge();
+            decoratorNodeView.ConnectOutputTo(edge);
+            childNodeView.ConnectInputTo(edge);
+            Add(edge);
+            
+            var contents = decoratorNodeView.Q("contents");
+            contents.Add(childNodeView);
+            var childRect = childView.GetPosition();
+            childRect.position = Vector2.zero;
+            childView.SetPosition(childRect);
+            childView.style.position = Position.Relative;
+
+            
+            return decoratorNodeView;
         }
 
         #endregion
@@ -475,6 +534,21 @@ namespace Batmind.Editor
             AddElement(compositeView);
             
             compositeView.SetPosition(position);
+        }
+
+        public void AddNewDecorator()
+        {
+            CreateDecoratorNodeWindow.OnSelected = CreateDecoratorWithType;
+                
+            CreateDecoratorNodeWindow.ShowWindow();
+
+            void CreateDecoratorWithType(Type decoratorType)
+            {
+                var decoratorNode = Activator.CreateInstance(decoratorType) as DecoratorNode;
+                var decoratorNodeView = CreateView(decoratorNode) as DecoratorNodeView;
+                decoratorNodeView.ExplicitNodeType = decoratorType;
+                AddElement(decoratorNodeView);
+            }
         }
         
         public void AddNewSequence()

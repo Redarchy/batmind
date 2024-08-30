@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Batmind.Editor.Nodes;
 using Batmind.Tree.Nodes.Composites;
+using Batmind.Tree.Nodes.Decorators;
 using Unity.EditorCoroutines.Editor;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
@@ -250,7 +251,7 @@ namespace Batmind.Editor
 
             if (connectedViews.Count <= 0)
             {
-                yield break;;
+                yield break;
             }
             
             switch (composite._EditorOrderMode)
@@ -298,6 +299,10 @@ namespace Batmind.Editor
                 yield return null;
             }
         }
+
+        public virtual void OnInputConnectedTo(NodeView outputNodeView) { }
+        
+        public virtual void OnOutputConnectedTo(NodeView inputNodeView) { }
     }
     
     public class NodeView<TTreeNode> : NodeView

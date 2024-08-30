@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Batmind.Tree.Nodes;
 using Batmind.Tree.Nodes.Composites;
+using Batmind.Tree.Nodes.Decorators;
 using Batmind.Utils;
 using Unity.EditorCoroutines.Editor;
 using UnityEditor;
@@ -146,7 +147,12 @@ namespace Batmind.Editor.Panels
 
                 // Since PropertyFields does not cover SerializeReferenced fields
                 if (property.propertyType == SerializedPropertyType.ManagedReference)
-                { 
+                {
+                    if (_selectedNode is DecoratorNode)
+                    {
+                        continue;
+                    }
+                    
                     // Create a dropdown to let the user select the type
                     var typeDropdown = CreateTypeDropdown(property.Copy());
                     scrollBar.Add(typeDropdown);

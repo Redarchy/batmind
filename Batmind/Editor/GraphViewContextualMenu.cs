@@ -1,4 +1,3 @@
-using System;
 using UnityEngine.UIElements;
 
 namespace Batmind.Editor
@@ -15,6 +14,9 @@ namespace Batmind.Editor
             
             data.menu.AppendAction("Sequence", (x) => treeGraphView.AddNewSequence());
             data.menu.AppendAction("Selector", (x) => treeGraphView.AddNewSelector());
+            
+            data.menu.AppendSeparator();
+            data.menu.AppendAction("Decorator", (x) => treeGraphView.AddNewDecorator());
             
             data.menu.AppendSeparator();
             data.menu.AppendAction("Action", (x) => treeGraphView.AddNewAction());

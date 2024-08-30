@@ -1,43 +1,43 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Batmind.Tree.Nodes.Actions;
+using Batmind.Tree.Nodes.Decorators;
 using UnityEditor;
 using UnityEngine;
 
 namespace Batmind.Editor
 {
-    public class CreateActionNodeWindow : EditorWindow
+    public class CreateDecoratorNodeWindow : EditorWindow
     {
         public static Action<Type> OnSelected;
 
-        private static Type ActionTypeItself = typeof(ActionNode);
+        private static Type DecoratorTypeItself = typeof(DecoratorNode);
         
-        private static List<Type> ActionTypes { get; set; }
+        private static List<Type> DecoratorTypes { get; set; }
         private static string[] ActionTypeNames { get; set; }
         private static int _selectedTypeIndex = 0;
         
         public static void ShowWindow()
         {
-            ActionTypes = new List<Type>();
+            DecoratorTypes = new List<Type>();
             
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             
             foreach (var assembly in assemblies)
             {
-                ActionTypes.AddRange(assembly.GetTypes().Where(t => t != ActionTypeItself && ActionTypeItself.IsAssignableFrom(t)));
+                DecoratorTypes.AddRange(assembly.GetTypes().Where(t => t != DecoratorTypeItself && DecoratorTypeItself.IsAssignableFrom(t)));
             }
 
-            ActionTypeNames = new string[ActionTypes.Count];
+            ActionTypeNames = new string[DecoratorTypes.Count];
 
-            for (var index = 0; index < ActionTypes.Count; index++)
+            for (var index = 0; index < DecoratorTypes.Count; index++)
             {
-                var actionType = ActionTypes[index];
+                var actionType = DecoratorTypes[index];
 
                 ActionTypeNames[index] = actionType.Name;
             }
 
-            GetWindow<CreateActionNodeWindow>("Create Action");
+            GetWindow<CreateDecoratorNodeWindow>("Create Decorator");
         }
 
         private void OnGUI()
@@ -48,7 +48,7 @@ namespace Batmind.Editor
             {
                 Close();
 
-                OnSelected?.Invoke(ActionTypes[_selectedTypeIndex]);
+                OnSelected?.Invoke(DecoratorTypes[_selectedTypeIndex]);
 
                 ClearCallbacks();
             }
