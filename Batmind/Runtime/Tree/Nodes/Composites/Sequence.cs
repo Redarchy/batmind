@@ -20,7 +20,7 @@
                 }
             }
 
-            Reset();
+            _currentChild = 0;
             return Status.Success;
         }
     }

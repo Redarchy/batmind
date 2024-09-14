@@ -12,7 +12,7 @@
                     case Status.Running:
                         return Status.Running;
                     case Status.Success:
-                        Reset();
+                        _currentChild = 0;
                         return Status.Success;
                     default:
                         _currentChild++;
@@ -20,7 +20,7 @@
                 }
             }
             
-            Reset();
+            _currentChild = 0;
             
             return Status.Failure;
         }

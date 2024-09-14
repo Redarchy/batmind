@@ -13,6 +13,7 @@ namespace Batmind.Tree.Nodes.Actions
         {
             if (_passedDuration >= _Duration)
             {
+                _passedDuration = 0f;
                 return Status.Success;
             }
 

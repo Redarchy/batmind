@@ -30,6 +30,7 @@ namespace Batmind.Tree.Nodes
         [SerializeField] public string Description = "";
 #endif
         
+        [Serializable]
         public enum Status { Success, Failure, Running }
 
         public virtual void Clear()
