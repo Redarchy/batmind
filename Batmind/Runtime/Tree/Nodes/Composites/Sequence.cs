@@ -1,27 +1,39 @@
-﻿namespace Batmind.Tree.Nodes.Composites
+﻿using System;
+
+namespace Batmind.Tree.Nodes.Composites
 {
-    [System.Serializable]
+    [Serializable]
     public class Sequence : Composite
     {
         public override Status Process()
         {
-            if (_currentChild < Children.Count)
+            var result = Status.Failure;
+
+            for (var i = _currentChild; i < Children.Count; i++)
             {
-                switch (Children[_currentChild].Process())
+                _currentChild = i;
+                
+                result = Children[_currentChild].Process();
+
+                switch (result)
                 {
-                    case Status.Running:
-                        return Status.Running;
+                    case Status.Success:
+                        break;
+                    
                     case Status.Failure:
-                        _currentChild = 0;
-                        return Status.Failure;
-                    default:
-                        _currentChild++;
-                        return _currentChild == Children.Count ? Status.Success : Status.Running;
+                        Reset();
+                        return result;
+                    
+                    case Status.Running:
+                        return result;
                 }
+
+                _currentChild++;
             }
 
-            _currentChild = 0;
-            return Status.Success;
+            Reset();
+            
+            return result;
         }
     }
 }

@@ -108,8 +108,7 @@ namespace Batmind.Editor
                 var instance = EditorWindow.GetWindow<GraphWindow>($"{target.name} Graph");
                 var treeOwner = (BehaviourTreeOwner) target;
                 
-                var jsonCopy = treeOwner.Tree.ToJson();
-                var treeClone = jsonCopy.FromJson<BehaviourTree>();
+                var treeClone = EditorApplication.isPlaying ? treeOwner.Tree : treeOwner.Tree.ToJson().FromJson<BehaviourTree>();
                 
                 instance.SetTarget(treeOwner, treeClone);
                 instance.RecreateGUI();

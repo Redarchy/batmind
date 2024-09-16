@@ -1,28 +1,39 @@
-﻿namespace Batmind.Tree.Nodes.Composites
+﻿using System;
+
+namespace Batmind.Tree.Nodes.Composites
 {
-    [System.Serializable]
+    [Serializable]
     public class Selector : Composite
     {
         public override Status Process()
         {
-            if (_currentChild < Children.Count)
+            var result = Status.Failure;
+
+            for (var i = _currentChild; i < Children.Count; i++)
             {
-                switch (Children[_currentChild].Process())
+                _currentChild = i;
+                
+                result = Children[_currentChild].Process();
+
+                switch (result)
                 {
-                    case Status.Running:
-                        return Status.Running;
                     case Status.Success:
-                        _currentChild = 0;
-                        return Status.Success;
-                    default:
-                        _currentChild++;
-                        return Status.Running;
+                        Reset();
+                        return result;
+                    
+                    case Status.Failure:
+                        break;
+                    
+                    case Status.Running:
+                        return result;
                 }
+
+                _currentChild++;
             }
+
+            Reset();
             
-            _currentChild = 0;
-            
-            return Status.Failure;
+            return result;
         }
     }
 }

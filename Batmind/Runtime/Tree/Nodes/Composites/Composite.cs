@@ -14,6 +14,7 @@ namespace Batmind.Tree.Nodes.Composites
         [SerializeReference] public List<Node> Children;
         
         protected int _currentChild = 0;
+        public int CurrentChild => _currentChild;
 
         public override void Initialize()
         {
@@ -31,11 +32,6 @@ namespace Batmind.Tree.Nodes.Composites
         public override void Reset()
         {
             _currentChild = 0;
-            
-            foreach (var child in Children)
-            {
-                child.Reset();
-            }
         }
 
         public override void SetBehaviourContext(BehaviourContext context)

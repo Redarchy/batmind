@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Batmind.Batmind.Editor.Nodes;
@@ -16,7 +17,9 @@ using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Edge = UnityEditor.Experimental.GraphView.Edge;
 using Node = Batmind.Tree.Nodes.Node;
+using Sequence = Batmind.Tree.Nodes.Composites.Sequence;
 
 namespace Batmind.Editor
 {
@@ -49,7 +52,95 @@ namespace Batmind.Editor
 
             CreateToolbar();
             CreateGraph();
+
+            if (EditorApplication.isPlaying)
+            {
+                ShowDebugLines();
+            }
+        }
+
+        public IEnumerator DebugDrawerCoroutine(List<Node> highlightedNodes)
+        {
+            var waitForEndOfFrame = new WaitForEndOfFrame();
+
+            while (true)
+            {
+                highlightedNodes.Clear();
+                
+                var root = _tree.Root;
+                var rootChild = root._Child;
+
+                highlightedNodes.Add(rootChild);
             
+                if (rootChild is Composite composite)
+                {
+                    IterateOverRunningChildren(composite, highlightedNodes);
+                }
+
+                HighlightNodes();
+
+                yield return waitForEndOfFrame;
+
+                if (!EditorApplication.isPlaying)
+                {
+                    yield break;
+                }
+            }
+            
+
+            void IterateOverRunningChildren(Composite composite, List<Node> nodes)
+            {
+                var currentChildIndex = composite.CurrentChild;
+                
+                var childNode = composite.Children[currentChildIndex];
+                nodes.Add(childNode);
+                
+                highlightedNodes.Add(childNode);
+
+                if (childNode is Composite childComposite)
+                {
+                    IterateOverRunningChildren(childComposite, highlightedNodes);
+                }
+            }
+
+            void HighlightNodes()
+            {
+                foreach (var graphElement in graphElements)
+                {
+                    if (graphElement is NodeView nodeView)
+                    {
+                        if (nodeView.InputPort == null)
+                        {
+                            continue;
+                        }
+                        
+                        var isHighlighted = highlightedNodes.Contains(nodeView.ImplicitTreeNode);
+                        
+                        foreach (var edge in nodeView.InputPort.connections)
+                        {
+                            edge.selected = isHighlighted;
+                        }
+
+                        var selectionBorder = nodeView.Q("selection-border");
+                        var alpha = isHighlighted ? 1f : 0f;
+                        selectionBorder.style.borderBottomWidth = 2f;
+                        selectionBorder.style.borderTopWidth = 2f;
+                        selectionBorder.style.borderRightWidth = 2f;
+                        selectionBorder.style.borderLeftWidth = 2f;
+                        selectionBorder.style.borderBottomColor = Color.cyan.WithA(alpha);
+                        selectionBorder.style.borderTopColor = Color.cyan.WithA(alpha);
+                        selectionBorder.style.borderLeftColor = Color.cyan.WithA(alpha);
+                        selectionBorder.style.borderRightColor = Color.cyan.WithA(alpha);
+                    }
+                }
+            }
+        }
+        
+        private void ShowDebugLines()
+        {
+            var highlightedNodes = UnityEngine.Pool.ListPool<Node>.Get();
+
+            EditorCoroutineUtility.StartCoroutine(DebugDrawerCoroutine(highlightedNodes), this);
         }
 
         private void SetGridBackground()
@@ -418,6 +509,11 @@ namespace Batmind.Editor
         
         private void CreateToolbar()
         {
+            if (EditorApplication.isPlaying)
+            {
+                return;
+            }
+
             var buttonToolbar = new Toolbar();
             buttonToolbar.Add(new Label("Toolbar"));
 

@@ -24,8 +24,20 @@ namespace Batmind.Tree.Nodes.Composites
         public override void Reset()
         {
             base.Reset();
+            ResetIteration(_Child);
+
+            void ResetIteration(Node child)
+            {
+                child.Reset();
             
-            _Child.Reset();
+                if (child is Composite composite)
+                {
+                    foreach (var compositeChild in composite.Children)
+                    {
+                        ResetIteration(compositeChild);
+                    }
+                }
+            }
         }
 
         #region Setting Behaviour Context

@@ -16,8 +16,8 @@
                         continue;
                 }
             }
-
-            _currentChild = 0;
+            
+            Reset();
             
             return Status.Success;
         }
