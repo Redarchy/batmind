@@ -28,6 +28,7 @@ namespace Batmind.Editor
                 ActionTypes.AddRange(assembly.GetTypes().Where(t => t != ActionTypeItself && ActionTypeItself.IsAssignableFrom(t)));
             }
 
+            ActionTypes.Sort((x, y) => string.Compare(x.Name, y.Name, StringComparison.Ordinal));
             ActionTypeNames = new string[ActionTypes.Count];
 
             for (var index = 0; index < ActionTypes.Count; index++)
