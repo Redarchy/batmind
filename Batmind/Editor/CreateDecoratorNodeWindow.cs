@@ -27,6 +27,7 @@ namespace Batmind.Editor
             {
                 DecoratorTypes.AddRange(assembly.GetTypes().Where(t => t != DecoratorTypeItself && DecoratorTypeItself.IsAssignableFrom(t)));
             }
+            DecoratorTypes.Sort((x, y) => string.Compare(x.Name, y.Name, StringComparison.Ordinal));
 
             ActionTypeNames = new string[DecoratorTypes.Count];
 

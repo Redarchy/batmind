@@ -29,6 +29,8 @@ namespace Batmind.Editor
                 ConditionTypes.AddRange(assembly.GetTypes().Where(t => t != ConditionTypeItself && ConditionTypeItself.IsAssignableFrom(t)));
             }
 
+            ConditionTypes.Sort((x, y) => string.Compare(x.Name, y.Name, StringComparison.Ordinal));
+
             ConditionTypeNames = new string[ConditionTypes.Count];
 
             for (var index = 0; index < ConditionTypes.Count; index++)
