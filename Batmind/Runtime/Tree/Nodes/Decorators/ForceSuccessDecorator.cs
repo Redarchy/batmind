@@ -7,6 +7,8 @@ namespace Batmind.Tree.Nodes.Decorators
     {
         public override Status Process()
         {
+            Child.Process();
+            
             return Status.Success;
         }
     }
