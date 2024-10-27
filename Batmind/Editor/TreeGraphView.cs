@@ -12,6 +12,7 @@ using Batmind.Tree.Nodes.Decorators;
 using Batmind.Utils;
 using Plugins.Batmind.Batmind.Editor.Nodes;
 using Unity.EditorCoroutines.Editor;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
@@ -59,12 +60,14 @@ namespace Batmind.Editor
             }
         }
 
-        public IEnumerator DebugDrawerCoroutine(List<Node> highlightedNodes)
+        public IEnumerator DebugDrawerCoroutine()
         {
-            var waitForEndOfFrame = new WaitForEndOfFrame();
-
+            var highlightedNodes = UnityEngine.Pool.ListPool<Node>.Get();
+            var waitFor = new EditorWaitForSeconds(Time.deltaTime);
+            
             while (true)
             {
+                HighlightNodes(false);
                 highlightedNodes.Clear();
                 
                 var root = _tree.Root;
@@ -77,17 +80,19 @@ namespace Batmind.Editor
                     IterateOverRunningChildren(composite, highlightedNodes);
                 }
 
-                HighlightNodes();
+                HighlightNodes(true);
+                
+                MarkDirtyRepaint();
 
-                yield return waitForEndOfFrame;
+                yield return waitFor;
 
                 if (!EditorApplication.isPlaying)
                 {
+                    UnityEngine.Pool.ListPool<Node>.Release(highlightedNodes);
                     yield break;
                 }
             }
             
-
             void IterateOverRunningChildren(Composite composite, List<Node> nodes)
             {
                 var currentChildIndex = composite.CurrentChild;
@@ -103,44 +108,47 @@ namespace Batmind.Editor
                 }
             }
 
-            void HighlightNodes()
+            void HighlightNodes(bool highlight)
             {
                 foreach (var graphElement in graphElements)
                 {
-                    if (graphElement is NodeView nodeView)
+                    if (graphElement is not NodeView nodeView)
                     {
-                        if (nodeView.InputPort == null)
-                        {
-                            continue;
-                        }
-                        
-                        var isHighlighted = highlightedNodes.Contains(nodeView.ImplicitTreeNode);
-                        
-                        foreach (var edge in nodeView.InputPort.connections)
-                        {
-                            edge.selected = isHighlighted;
-                        }
-
-                        var selectionBorder = nodeView.Q("selection-border");
-                        var alpha = isHighlighted ? 1f : 0f;
-                        selectionBorder.style.borderBottomWidth = 2f;
-                        selectionBorder.style.borderTopWidth = 2f;
-                        selectionBorder.style.borderRightWidth = 2f;
-                        selectionBorder.style.borderLeftWidth = 2f;
-                        selectionBorder.style.borderBottomColor = Color.cyan.WithA(alpha);
-                        selectionBorder.style.borderTopColor = Color.cyan.WithA(alpha);
-                        selectionBorder.style.borderLeftColor = Color.cyan.WithA(alpha);
-                        selectionBorder.style.borderRightColor = Color.cyan.WithA(alpha);
+                        continue;
                     }
+                    
+                    if (nodeView.InputPort == null)
+                    {
+                        continue;
+                    }
+                        
+                    var isHighlighted = highlightedNodes.Contains(nodeView.ImplicitTreeNode);
+                    isHighlighted &= highlight;
+                        
+                    foreach (var edge in nodeView.InputPort.connections)
+                    {
+                        edge.selected = isHighlighted;
+                    }
+
+                    var selectionBorder = nodeView.Q("selection-border");
+                    var alpha = isHighlighted ? 1f : 0f;
+                    var color = isHighlighted ? Color.cyan : Color.gray;
+                        
+                    selectionBorder.style.borderBottomWidth = 2f;
+                    selectionBorder.style.borderTopWidth = 2f;
+                    selectionBorder.style.borderRightWidth = 2f;
+                    selectionBorder.style.borderLeftWidth = 2f;
+                    selectionBorder.style.borderBottomColor = color.WithA(alpha);
+                    selectionBorder.style.borderTopColor = color.WithA(alpha);
+                    selectionBorder.style.borderLeftColor = color.WithA(alpha);
+                    selectionBorder.style.borderRightColor = color.WithA(alpha);
                 }
             }
         }
         
         private void ShowDebugLines()
         {
-            var highlightedNodes = UnityEngine.Pool.ListPool<Node>.Get();
-
-            EditorCoroutineUtility.StartCoroutine(DebugDrawerCoroutine(highlightedNodes), this);
+            EditorCoroutineUtility.StartCoroutine(DebugDrawerCoroutine(), this);
         }
 
         private void SetGridBackground()
